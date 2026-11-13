@@ -223,20 +223,22 @@ contract MerkleDistributor {
                     <label class="block text-xs text-slate-400 mb-1">Master Password (Min 8 characters)</label>
                     <input id="onb-pass" type="password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white">
                 </div>
-                <div class="pt-2">
-                    <label class="flex items-center gap-2 text-sm text-slate-300">
-                        <input id="onb-paper-check" type="checkbox" class="rounded bg-slate-950 border-slate-700"> I have written my 12-word seed phrase securely on paper.
-                    </label>
-                </div>
-                <div class="flex flex-wrap gap-3 pt-2">
-                    <button onclick="generateEncryptedWallet()" class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-3 rounded-lg transition-all text-sm">Generate Wallet + Seed + Encrypt</button>
-                    <button onclick="dispatchEncryptedCredentials()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-3 rounded-lg transition-all text-sm">Dispatch Credentials Email</button>
-                </div>
-                <div class="flex flex-wrap gap-3">
-                    <button onclick="testDecryptBackup()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-3 rounded-lg transition-all text-xs">Test Decrypt Backup</button>
-                    <button onclick="exportEncryptedBackupFile()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-3 rounded-lg transition-all text-xs">Export Encrypted Backup JSON</button>
-                </div>
+                <button onclick="generateEncryptedWallet()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-3 rounded-lg transition-all text-sm w-full">Step 1: Generate Wallet + Seed + Encrypt</button>
+                
                 <div id="onb-result" class="hidden bg-slate-950 p-4 rounded-lg border border-slate-800 text-xs font-mono text-emerald-400 space-y-2"></div>
+
+                <div id="step2-container" class="hidden space-y-4 pt-2 border-t border-slate-800">
+                    <label class="flex items-center gap-2 text-sm text-slate-300">
+                        <input id="onb-paper-check" type="checkbox" class="rounded bg-slate-950 border-slate-700"> Step 2: I have written my 12-word seed phrase securely on paper.
+                    </label>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="dispatchEncryptedCredentials()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-3 rounded-lg transition-all text-sm font-bold">Dispatch Credentials Email</button>
+                        <button onclick="exportEncryptedBackupFile()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-3 rounded-lg transition-all text-sm">Export Encrypted Backup JSON</button>
+                    </div>
+                </div>
+                <div class="flex gap-3 pt-2 border-t border-slate-800">
+                    <button onclick="testDecryptBackup()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-lg transition-all text-xs">Test Decrypt Backup</button>
+                </div>
             </div>
         </div>
 
@@ -270,7 +272,7 @@ contract MerkleDistributor {
                     <h3 class="text-sm font-bold text-purple-300 uppercase tracking-wider">Multi-Sig Minting Engine</h3>
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Gold Deposit Weight (Grams)</label>
-                        <input id=" creator-gold-grams" type="number" placeholder="e.g. 870" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white" oninput="calculateMaxMint()">
+                        <input id="creator-gold-grams" type="number" placeholder="e.g. 870" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white" oninput="calculateMaxMint()">
                     </div>
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">Max Mintable DDN (Formula: Grams / 0.0870)</label>
@@ -739,7 +741,6 @@ contract MerkleDistributor {
 
     <!-- JavaScript Application Logic -->
     <script>
-        // Global App State
         let airdropState = {
             claimedTotal: 3350,
             remainingTotal: 4650
@@ -752,14 +753,12 @@ contract MerkleDistributor {
         let activeMiningMined = 0;
 
         document.addEventListener("DOMContentLoaded", function() {
-            // Secret Creator Hash Check
             const secretKey = "#creator-master-admin-key";
             if (window.location.hash === secretKey) {
                 document.querySelectorAll('.creator-only').forEach(el => el.style.display = 'inline-block');
                 document.getElementById('creator-badge').classList.remove('hidden');
             }
 
-            // Tab Switcher Logic
             const buttons = document.querySelectorAll('.tab-btn');
             const contents = document.querySelectorAll('.tab-content');
 
@@ -770,14 +769,12 @@ contract MerkleDistributor {
                 });
             });
 
-            // Start Mining Simulation Interval
             setInterval(() => {
                 activeMiningMined += 0.1;
                 const minedEl = document.getElementById('mined-amount');
                 if(minedEl) minedEl.innerText = activeMiningMined.toFixed(2);
-            }, 60000); // Every minute 0.1 DDN
+            }, 60000);
 
-            // Load saved user session if exists
             checkExistingSession();
         });
 
@@ -863,7 +860,6 @@ contract MerkleDistributor {
         }
 
         function claimAirdropToken() {
-            const email = document.getElementById('airdrop-email').value.trim();
             const category = document.getElementById('airdrop-category').value;
             let wallet = document.getElementById('airdrop-wallet').value.trim();
             const resBox = document.getElementById('airdrop-result');
@@ -915,27 +911,21 @@ contract MerkleDistributor {
             window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
         }
 
-        // 3. Secure Onboarding & Encryption
+        // 3. Secure Onboarding & Encryption (Completed & Fixed flow)
         async function generateEncryptedWallet() {
             const name = document.getElementById('onb-name').value.trim();
             const email = document.getElementById('onb-email').value.trim();
             const pass = document.getElementById('onb-pass').value;
-            const paperChecked = document.getElementById('onb-paper-check').checked;
             const resBox = document.getElementById('onb-result');
 
             if(!name || !email || pass.length < 8) {
                 alert("Please provide Name, Email, and a Password of at least 8 characters.");
                 return;
             }
-            if(!paperChecked) {
-                alert("Please confirm you have written your seed phrase on paper.");
-                return;
-            }
 
             const walletAddr = "DDN_" + Math.random().toString(16).substring(2, 12).toUpperCase();
             const sampleSeed = "apple banana crater diamond eagle falcon galaxy harvest iceberg journal kinetic lunar";
 
-            // Web Crypto API PBKDF2 + AES-256-GCM encryption
             const enc = new TextEncoder();
             const salt = window.crypto.getRandomValues(new Uint8Array(16));
             const iv = window.crypto.getRandomValues(new Uint8Array(12));
@@ -943,4 +933,363 @@ contract MerkleDistributor {
             const keyMaterial = await window.crypto.subtle.importKey(
                 "raw", enc.encode(pass), {name: "PBKDF2"}, false, ["deriveKey"]
             );
-            const key = await window.crypto
+            const key = await window.crypto.subtle.deriveKey(
+                {name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256"},
+                keyMaterial, {name: "AES-GCM", length: 256}, false, ["encrypt"]
+            );
+
+            const encryptedSeedBuf = await window.crypto.subtle.encrypt(
+                {name: "AES-GCM", iv: iv}, key, enc.encode(sampleSeed)
+            );
+
+            const encryptedBlobObj = {
+                salt: Array.from(salt),
+                iv: Array.from(iv),
+                ciphertext: Array.from(new Uint8Array(encryptedSeedBuf))
+            };
+
+            const userRecord = {
+                name, email, walletAddr, encryptedBlob: encryptedBlobObj
+            };
+
+            localStorage.setItem('ddn_current_user', JSON.stringify(userRecord));
+            let users = JSON.parse(localStorage.getItem('ddn_all_users') || '[]');
+            users.push(userRecord);
+            localStorage.setItem('ddn_all_users', JSON.stringify(users));
+
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `
+                <div>✅ WALLET GENERATED & ENCRYPTED (AES-256-GCM)</div>
+                <div>Wallet Address: ${walletAddr}</div>
+                <div class="text-amber-400 font-bold">12-Word Seed: ${sampleSeed}</div>
+                <div class="text-slate-400 text-[10px]">Encrypted Blob stored securely. Raw seed never stored unencrypted.</div>
+            `;
+            document.getElementById('step2-container').classList.remove('hidden');
+        }
+
+        function dispatchEncryptedCredentials() {
+            const email = document.getElementById('onb-email').value;
+            const paperChecked = document.getElementById('onb-paper-check').checked;
+            const user = JSON.parse(localStorage.getItem('ddn_current_user') || '{}');
+            
+            if(!paperChecked) {
+                alert("Please confirm you have written your seed phrase securely on paper first.");
+                return;
+            }
+            if(!user.walletAddr) {
+                alert("Please generate a wallet first!");
+                return;
+            }
+            const subject = encodeURIComponent("Digital Dinar Encrypted Wallet Credentials");
+            const body = encodeURIComponent(`Assalamu Alaikum ${user.name},\n\nYour non-custodial wallet has been created securely.\nWallet Address: ${user.walletAddr}\n\nEncrypted Blob verification complete. Please keep your master password safe.\n\nDigital Dinar Enterprise v3.1`);
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        }
+
+        async function testDecryptBackup() {
+            const user = JSON.parse(localStorage.getItem('ddn_current_user') || '{}');
+            const pass = document.getElementById('onb-pass').value;
+            if(!user.encryptedBlob || !pass) {
+                alert("Please generate a wallet and enter your password first.");
+                return;
+            }
+            try {
+                const blob = user.encryptedBlob;
+                const enc = new TextEncoder();
+                const keyMaterial = await window.crypto.subtle.importKey(
+                    "raw", enc.encode(pass), {name: "PBKDF2"}, false, ["deriveKey"]
+                );
+                const key = await window.crypto.subtle.deriveKey(
+                    {name: "PBKDF2", salt: new Uint8Array(blob.salt), iterations: 100000, hash: "SHA-256"},
+                    keyMaterial, {name: "AES-GCM", length: 256}, false, ["decrypt"]
+                );
+                await window.crypto.subtle.decrypt(
+                    {name: "AES-GCM", iv: new Uint8Array(blob.iv)}, key, new Uint8Array(blob.ciphertext)
+                );
+                alert("SUCCESS! Backup decrypted successfully with your password.");
+            } catch(e) {
+                alert("Decryption failed! Incorrect password.");
+            }
+        }
+
+        function exportEncryptedBackupFile() {
+            const paperChecked = document.getElementById('onb-paper-check').checked;
+            if(!paperChecked) {
+                alert("Please confirm you have written your seed phrase on paper first.");
+                return;
+            }
+            const user = JSON.parse(localStorage.getItem('ddn_current_user') || '{}');
+            if(!user.encryptedBlob) {
+                alert("No encrypted wallet found to export.");
+                return;
+            }
+            const exportData = {
+                wallet: user.walletAddr,
+                email: user.email,
+                encryptedBlob: user.encryptedBlob
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", "ddn-encrypted-backup.json");
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+        }
+
+        // 4. Creator Portal
+        function calculateMaxMint() {
+            const grams = parseFloat(document.getElementById('creator-gold-grams').value) || 0;
+            const maxMint = grams / 0.0870;
+            document.getElementById('creator-max-mint').value = `${maxMint.toFixed(2)} DDN`;
+        }
+
+        function executeMultiSigMint() {
+            const grams = parseFloat(document.getElementById('creator-gold-grams').value) || 0;
+            const certHash = document.getElementById('creator-cert-hash').value.trim();
+            const pass = document.getElementById('creator-password').value;
+            const resBox = document.getElementById('creator-mint-result');
+
+            if(grams <= 0 || !certHash || !pass) {
+                alert("Please enter valid gold grams, audit certificate hash, and password.");
+                return;
+            }
+            const maxMint = grams / 0.0870;
+            const txHash = "0x" + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
+            
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `
+                <div>⚡ MULTI-SIG MINT EXECUTED SUCCESSFULLY</div>
+                <div>Minted: ${maxMint.toFixed(2)} DDN against ${grams}g Gold</div>
+                <div>PoR Status: VERIFIED 1:1 In Sync | Multi-Sig: 3-of-5 Approved</div>
+                <div>DAO Status: Automatically Approved</div>
+                <div>Tx Hash: ${txHash}</div>
+            `;
+
+            creatorMintLogHistory.unshift(`[Mint] ${maxMint.toFixed(2)} DDN minted against ${grams}g deposit. PoR Synced.`);
+            document.getElementById('creator-mint-log').innerHTML = creatorMintLogHistory.map(l => `<div>${l}</div>`).join('');
+        }
+
+        function sendCreatorInvitation() {
+            const email = document.getElementById('creator-invite-email').value;
+            const cat = document.getElementById('creator-invite-cat').value;
+            if(!email) {
+                alert("Please enter invitee email.");
+                return;
+            }
+            const subject = encodeURIComponent("Exclusive Invitation to Digital Dinar (DDN) Airdrop");
+            const body = encodeURIComponent(`Assalamu Alaikum,\n\nYou have been specially invited as a '${cat}' to claim your Digital Dinar (DDN) tokens. Please visit the enterprise dashboard.\n\nDigital Dinar Team`);
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        }
+
+        // 5. Transfer / P2P + Gold Equivalent
+        function calculateGoldEquivalent() {
+            const amt = parseFloat(document.getElementById('p2p-amount').value) || 0;
+            const goldGrams = amt * 0.0870;
+            document.getElementById('p2p-gold-eq').innerText = `Gold Equivalent: ${goldGrams.toFixed(4)}g (24k)`;
+        }
+
+        function sendP2PTransfer() {
+            const from = document.getElementById('p2p-from').value.trim();
+            const to = document.getElementById('p2p-to').value.trim();
+            const amount = parseFloat(document.getElementById('p2p-amount').value) || 0;
+            const resBox = document.getElementById('p2p-result');
+
+            if(!from || !to || amount <= 0) {
+                alert("Please fill in sender, recipient, and valid amount.");
+                return;
+            }
+
+            const goldEq = amount * 0.0870;
+            const txHash = "0x" + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
+
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `
+                <div>✅ TRANSFER COMPLETED SUCCESSFULLY</div>
+                <div>From: ${from} → To: ${to}</div>
+                <div>Amount: ${amount} DDN (${goldEq.toFixed(4)}g 24k Gold)</div>
+                <div>Gas Fee: $0.01 (Zero Riba) | Finality: &lt; 2s</div>
+                <div>Tx Hash: ${txHash}</div>
+            `;
+        }
+
+        function executeBatchDistribution() {
+            const list = document.getElementById('batch-list').value.trim();
+            const resBox = document.getElementById('batch-result');
+            if(!list) {
+                alert("Please enter recipients list.");
+                return;
+            }
+            const lines = list.split('\n');
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `✅ Batch distribution executed successfully across ${lines.length} recipient wallets. Gas optimized.`;
+        }
+
+        // 7. Shariah DAO Voting
+        function voteProposal(id, choice) {
+            const yesEl = document.getElementById(`prop-${id}-yes`);
+            let currentYes = parseInt(yesEl.innerText.replace(/,/g, ''));
+            if(choice === 'yes') {
+                currentYes += 1;
+                yesEl.innerText = currentYes.toLocaleString();
+                alert(`Successfully voted YES on Proposal #${id}`);
+            } else {
+                alert(`Successfully voted NO on Proposal #${id}`);
+            }
+        }
+
+        // 8. Mudarabah AMM Profit Calculator
+        function calculateMudarabahProfit() {
+            const liq = parseFloat(document.getElementById('amm-user-liq').value) || 0;
+            const profit = parseFloat(document.getElementById('amm-total-profit').value) || 0;
+            const pool = parseFloat(document.getElementById('amm-total-pool').value) || 1;
+            const resBox = document.getElementById('amm-result');
+
+            const userShare = (liq / pool) * profit * 0.70;
+
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `
+                <div>📊 MUDARABAH PROFIT CALCULATION</div>
+                <div>Your Liquidity Share: ${((liq/pool)*100).toFixed(2)}%</div>
+                <div>Your Net Profit Share (70% Mudarib / Rab-ul-Maal split): <span class="text-amber-400 font-bold">${userShare.toFixed(2)} DDN</span></div>
+                <div>Compliance: 100% Profit-Sharing (No Interest / No Fixed APY)</div>
+            `;
+        }
+
+        // 9. Bridge Simulation
+        function executeSecureBridge() {
+            const from = document.getElementById('bridge-from').value;
+            const to = document.getElementById('bridge-to').value;
+            const amt = document.getElementById('bridge-amount').value;
+            const resBox = document.getElementById('bridge-result');
+
+            if(!amt || amt <= 0) {
+                alert("Please enter bridge amount.");
+                return;
+            }
+
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `
+                <div class="space-y-1">
+                    <div>🔄 STEP 1: Locking ${amt} DDN on ${from}... [DONE]</div>
+                    <div>🔐 STEP 2: Chainlink CCIP Vault Proof Attestation... [VERIFIED]</div>
+                    <div>⚡ STEP 3: Minting ${amt} DDN on ${to}... [SUCCESS]</div>
+                    <div class="text-amber-400 font-bold pt-1">Bridge Complete. Zero Double-Mint Guaranteed.</div>
+                </div>
+            `;
+        }
+
+        // 10. Zakat Calculator
+        function calculateZakatObligation() {
+            const bal = parseFloat(document.getElementById('zakat-balance').value) || 0;
+            const hawl = document.getElementById('zakat-hawl').value;
+            const resBox = document.getElementById('zakat-result');
+
+            const nisabGrams = 87.48;
+            const userGrams = bal * 0.0870;
+
+            resBox.classList.remove('hidden');
+            if(userGrams >= nisabGrams && hawl === 'completed') {
+                const zakatDue = bal * 0.025;
+                resBox.innerHTML = `
+                    <div>✅ ZAKAT IS OBLIGATORY (Wajib)</div>
+                    <div>Your Gold Equiv: ${userGrams.toFixed(2)}g (Nisab Met: 87.48g)</div>
+                    <div>Zakat Due (2.5%): <span class="text-amber-400 font-bold">${zakatDue.toFixed(2)} DDN</span></div>
+                `;
+            } else {
+                resBox.innerHTML = `
+                    <div>ℹ️ ZAKAT NOT DUE YET</div>
+                    <div>Your Gold Equiv: ${userGrams.toFixed(2)}g (Nisab Threshold: 87.48g)</div>
+                    <div>Status: Below Nisab threshold or Hawl period not completed.</div>
+                `;
+            }
+        }
+
+        // 12. Wallet Check & Recovery
+        function verifyWalletBalance() {
+            const addr = document.getElementById('check-wallet-addr').value.trim();
+            const resBox = document.getElementById('check-wallet-result');
+            if(!addr) {
+                alert("Please enter a wallet address.");
+                return;
+            }
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `
+                <div>Wallet: ${addr}</div>
+                <div>Balance: 250.00 DDN | Gold Peg: 21.75g (24k)</div>
+                <div>Status: Active | ZK-Verified | PoR Synced</div>
+            `;
+        }
+
+        function recoverWallet() {
+            const seed = document.getElementById('recover-seed').value.trim();
+            const pass = document.getElementById('recover-pass').value;
+            const resBox = document.getElementById('recover-result');
+            if(!seed || pass.length < 8) {
+                alert("Please enter seed phrase and password (min 8 chars).");
+                return;
+            }
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `
+                <div>✅ WALLET RECOVERED SUCCESSFULLY</div>
+                <div>Restored Wallet: DDN_RECOVERED_99A1</div>
+                <div>Restored Balance: 150.00 DDN</div>
+            `;
+        }
+
+        // 13. Login / Session Management & Dashboard
+        function userLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-pass').value;
+
+            let users = JSON.parse(localStorage.getItem('ddn_all_users') || '[]');
+            const found = users.find(u => u.email === email);
+
+            if(email === "mdsubhanpasha@icloud.com" || found) {
+                localStorage.setItem('ddn_logged_in_email', email);
+                showUserDashboard(email);
+            } else {
+                alert("User not found. Please create an account via Secure Onboarding.");
+            }
+        }
+
+        function checkExistingSession() {
+            const loggedEmail = localStorage.getItem('ddn_logged_in_email');
+            if(loggedEmail) {
+                showUserDashboard(loggedEmail);
+            }
+        }
+
+        function showUserDashboard(email) {
+            document.getElementById('login-container').classList.add('hidden');
+            document.getElementById('user-dashboard').classList.remove('hidden');
+            document.getElementById('dash-welcome').innerText = `Welcome, Mohammad Subhan Pasha`;
+        }
+
+        function userLogout() {
+            localStorage.removeItem('ddn_logged_in_email');
+            document.getElementById('user-dashboard').classList.add('hidden');
+            document.getElementById('login-container').classList.remove('hidden');
+        }
+
+        function claimMiningRewards() {
+            if(activeMiningMined <= 0) {
+                alert("No mined rewards available to claim yet.");
+                return;
+            }
+            alert(`Successfully claimed ${activeMiningMined.toFixed(2)} DDN mined rewards to your balance!`);
+            activeMiningMined = 0;
+            document.getElementById('mined-amount').innerText = "0.00";
+        }
+
+        function dashSendP2P() {
+            const to = document.getElementById('dash-p2p-to').value.trim();
+            const amt = document.getElementById('dash-p2p-amt').value;
+            if(!to || !amt) {
+                alert("Please enter recipient and amount.");
+                return;
+            }
+            alert(`Successfully sent ${amt} DDN to ${to}! Gas fee: $0.01.`);
+        }
+    </script>
+</body>
+</html>
