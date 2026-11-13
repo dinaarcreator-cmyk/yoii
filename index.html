@@ -15,119 +15,140 @@
 
     <!-- Header -->
     <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold tracking-wider text-amber-400">DIGITAL DINAR <span class="text-xs bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30">v3.1 ENTERPRISE</span></h1>
-            <div class="text-sm text-slate-400">Status: <span class="text-emerald-400 font-semibold">● Live & Secured</span></div>
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 class="text-xl font-bold tracking-wider text-amber-400">DIGITAL <span class="text-emerald-400">DINAR</span> <span class="text-xs bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30">v3.1 ENTERPRISE</span></h1>
+            
+            <!-- Navigation Tabs Bar -->
+            <nav class="flex flex-wrap gap-2 justify-center">
+                <button onclick="switchTab('explorer', event)" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all bg-emerald-500 text-slate-950 font-bold shadow" data-target="explorer">Explorer</button>
+                <button onclick="switchTab('airdrop', event)" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all bg-amber-500 text-slate-950 font-bold shadow" data-target="airdrop">8,000 DDN Airdrop</button>
+                <button onclick="switchTab('onboarding', event)" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 hover:text-white" data-target="onboarding">Secure Onboarding</button>
+                <button onclick="switchTab('creator', event)" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 hover:text-white" data-target="creator">Creator Mint</button>
+                <button onclick="switchTab('transfer', event)" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 hover:text-white" data-target="transfer">Transfer / P2P</button>
+                <button onclick="switchTab('vault', event)" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 hover:text-white" data-target="vault">RWA & Vault</button>
+                <button onclick="switchTab('dao', event)" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 hover:text-white" data-target="dao">Shariah DAO</button>
+                <button onclick="switchTab('amm', event)" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 hover:text-white" data-target="amm">Mudarabah AMM</button>
+                <button onclick="switchTab('bridge', event)" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 hover:text-white" data-target="bridge">Bridge</button>
+                <button onclick="switchTab('zakat', event)" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 hover:text-white" data-target="zakat">Zakat</button>
+                <button onclick="switchTab('whitepaper', event)" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 hover:text-white" data-target="whitepaper">White Paper</button>
+                <button onclick="switchTab('walletcheck', event)" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 hover:text-white" data-target="walletcheck">Wallet Check</button>
+                <button onclick="switchTab('login', event)" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all bg-emerald-600 text-white hover:bg-emerald-500" data-target="login">Login / Create Account</button>
+            </nav>
         </div>
     </header>
 
-    <!-- Main Container -->
-    <main class="max-w-7xl mx-auto flex-1 w-full p-4 md:p-6 grid grid-cols-1 md:grid-cols-4 gap-6">
+    <!-- Main Container / Tab Contents -->
+    <main class="max-w-7xl mx-auto flex-1 w-full p-6">
 
-        <!-- Sidebar Navigation Tabs -->
-        <aside class="md:col-span-1 bg-slate-900/80 border border-slate-800 p-4 rounded-xl flex flex-col gap-2 h-fit">
-            <h2 class="text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2 px-2">Navigation</h2>
-            <button onclick="switchTab('airdrop', event)" class="tab-btn w-full text-left px-4 py-3 rounded-lg font-medium transition-all bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20" data-target="airdrop">
-                🎁 8,000 DDN Airdrop
-            </button>
-            <button onclick="switchTab('vault', event)" class="tab-btn w-full text-left px-4 py-3 rounded-lg font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-white" data-target="vault">
-                🏛️ Spot-Gold Vault & PoR
-            </button>
-            <button onclick="switchTab('dao', event)" class="tab-btn w-full text-left px-4 py-3 rounded-lg font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-white" data-target="dao">
-                ⚖️ Shariah Supervisory DAO
-            </button>
-            <button onclick="switchTab('onboarding', event)" class="tab-btn w-full text-left px-4 py-3 rounded-lg font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-white" data-target="onboarding">
-                🔐 Secure Onboarding
-            </button>
-            <button onclick="switchTab('creator', event)" class="tab-btn w-full text-left px-4 py-3 rounded-lg font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-white" data-target="creator">
-                ⚡ Creator Mint & Transfer
-            </button>
-        </aside>
+        <!-- 1. Explorer Tab -->
+        <div id="explorer" class="tab-content active space-y-4">
+            <h2 class="text-2xl font-bold text-emerald-400">Network Explorer</h2>
+            <p class="text-slate-300">Live transaction ledger, block heights, and zero-Riba transfer monitoring.</p>
+            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">Block #14,892,301 • Status: All Systems Operational</div>
+        </div>
 
-        <!-- Dynamic Tab Contents -->
-        <section class="md:col-span-3 bg-slate-900/50 border border-slate-800 p-6 rounded-xl">
-
-            <!-- Tab 1: Airdrop -->
-            <div id="airdrop" class="tab-content active space-y-4">
-                <h3 class="text-2xl font-bold text-amber-400">8,000 DDN Merkle Claim Airdrop</h3>
-                <p class="text-slate-300">Verify your allocation and claim your 8,000 DDN tokens securely with zero Riba-based lock-ins.</p>
-                <div class="bg-slate-900 p-4 rounded-lg border border-slate-800 space-y-3">
-                    <label class="block text-sm text-slate-400">Enter Wallet Address or Registered Email</label>
-                    <input type="text" placeholder="0x... or mdsubhanpasha@icloud.com" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-amber-500">
-                    <button class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-3 rounded-lg transition-all w-full md:w-auto">Check Eligibility & Claim</button>
-                </div>
+        <!-- 2. Airdrop Tab -->
+        <div id="airdrop" class="tab-content space-y-4">
+            <h2 class="text-2xl font-bold text-amber-400">8,000 DDN Merkle Claim Airdrop</h2>
+            <p class="text-slate-300">Verify your eligibility and claim your 8,000 DDN tokens securely.</p>
+            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3 max-w-xl">
+                <input type="text" placeholder="Enter Wallet Address or mdsubhanpasha@icloud.com" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white">
+                <button class="bg-amber-500 text-slate-950 font-bold px-6 py-3 rounded-lg w-full">Check Eligibility & Claim</button>
             </div>
+        </div>
 
-            <!-- Tab 2: Vault & PoR -->
-            <div id="vault" class="tab-content space-y-4">
-                <h3 class="text-2xl font-bold text-amber-400">Spot-Gold Vault & Chainlink PoR</h3>
-                <p class="text-slate-300">Real-time cryptographic audit of physical gold reserves backing circulating DDN tokens.</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-slate-900 p-4 rounded-lg border border-slate-800">
-                        <span class="text-xs text-slate-400">Total Gold Reserves</span>
-                        <h4 class="text-xl font-bold text-white mt-1">1,250.45 Grams (24k)</h4>
-                    </div>
-                    <div class="bg-slate-900 p-4 rounded-lg border border-slate-800">
-                        <span class="text-xs text-slate-400">Chainlink PoR Status</span>
-                        <h4 class="text-xl font-bold text-emerald-400 mt-1">Verified 1:1 In Sync</h4>
-                    </div>
-                </div>
+        <!-- 3. Secure Onboarding Tab -->
+        <div id="onboarding" class="tab-content space-y-4">
+            <h2 class="text-2xl font-bold text-amber-400">Secure Onboarding & Encrypted Wallet</h2>
+            <p class="text-slate-300">Automatic encrypted seed phrase dispatch to verified email.</p>
+            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3 max-w-xl">
+                <input type="email" value="mdsubhanpasha@icloud.com" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white">
+                <button class="bg-amber-500 text-slate-950 font-bold px-6 py-3 rounded-lg w-full">Dispatch Encrypted Credentials</button>
             </div>
+        </div>
 
-            <!-- Tab 3: Shariah DAO -->
-            <div id="dao" class="tab-content space-y-4">
-                <h3 class="text-2xl font-bold text-amber-400">Shariah Supervisory DAO</h3>
-                <p class="text-slate-300">Decentralized multi-sig governance ensuring pure ethical compliance and Mudarabah AMM oversight.</p>
-                <div class="bg-slate-900 p-4 rounded-lg border border-slate-800">
-                    <p class="text-sm text-slate-300">Active Proposals: <span class="text-amber-400 font-semibold">03 Proposals under voting</span></p>
-                </div>
-            </div>
+        <!-- 4. Creator Mint Tab -->
+        <div id="creator" class="tab-content space-y-4">
+            <h2 class="text-2xl font-bold text-amber-400">Creator Minting Portal</h2>
+            <p class="text-slate-300">Vault creators minting gold-backed tokens against verified physical bullion.</p>
+        </div>
 
-            <!-- Tab 4: Secure Onboarding -->
-            <div id="onboarding" class="tab-content space-y-4">
-                <h3 class="text-2xl font-bold text-amber-400">Secure Onboarding & Encrypted Wallet</h3>
-                <p class="text-slate-300">Encrypted seed phrase dispatch directly to verified user email addresses.</p>
-                <div class="bg-slate-900 p-4 rounded-lg border border-slate-800 space-y-3">
-                    <input type="email" value="mdsubhanpasha@icloud.com" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-amber-500">
-                    <button class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-3 rounded-lg transition-all w-full md:w-auto">Generate & Dispatch Encrypted Credentials</button>
-                </div>
-            </div>
+        <!-- 5. Transfer / P2P Tab -->
+        <div id="transfer" class="tab-content space-y-4">
+            <h2 class="text-2xl font-bold text-amber-400">P2P Zero-Fee Transfer</h2>
+            <p class="text-slate-300">Instant peer-to-peer transfers with zero Riba and ZK privacy.</p>
+        </div>
 
-            <!-- Tab 5: Creator Minting -->
-            <div id="creator" class="tab-content space-y-4">
-                <h3 class="text-2xl font-bold text-amber-400">Creator Minting & P2P Transfer Portal</h3>
-                <p class="text-slate-300">Authorized vault creators can mint tokens against verified deposits and distribute seamlessly.</p>
-                <div class="bg-slate-900 p-4 rounded-lg border border-slate-800 space-y-3">
-                    <input type="number" placeholder="Enter Gold Deposit Weight (Grams)" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-amber-500">
-                    <button class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-3 rounded-lg transition-all w-full md:w-auto">Execute Multi-Sig Mint</button>
-                </div>
-            </div>
+        <!-- 6. RWA & Vault Tab -->
+        <div id="vault" class="tab-content space-y-4">
+            <h2 class="text-2xl font-bold text-amber-400">Spot-Gold Vault & Chainlink PoR</h2>
+            <p class="text-slate-300">1:1 physical gold backing verified via Chainlink decentralized oracles.</p>
+        </div>
 
-        </section>
+        <!-- 7. Shariah DAO Tab -->
+        <div id="dao" class="tab-content space-y-4">
+            <h2 class="text-2xl font-bold text-amber-400">Shariah Supervisory DAO</h2>
+            <p class="text-slate-300">Decentralized governance and ethical compliance voting.</p>
+        </div>
+
+        <!-- 8. Mudarabah AMM Tab -->
+        <div id="amm" class="tab-content space-y-4">
+            <h2 class="text-2xl font-bold text-amber-400">Mudarabah AMM Liquidity</h2>
+            <p class="text-slate-300">Profit-sharing liquidity pools replacing interest-yielding farming.</p>
+        </div>
+
+        <!-- 9. Bridge Tab -->
+        <div id="bridge" class="tab-content space-y-4">
+            <h2 class="text-2xl font-bold text-amber-400">Cross-Chain CCIP Bridge</h2>
+            <p class="text-slate-300">Secure omnichain token bridging across multi-networks.</p>
+        </div>
+
+        <!-- 10. Zakat Tab -->
+        <div id="zakat" class="tab-content space-y-4">
+            <h2 class="text-2xl font-bold text-amber-400">Automated Zakat Calculator</h2>
+            <p class="text-slate-300">Calculate and distribute Zakat cleanly on your digital gold assets.</p>
+        </div>
+
+        <!-- 11. White Paper Tab -->
+        <div id="whitepaper" class="tab-content space-y-4">
+            <h2 class="text-2xl font-bold text-amber-400">Digital Dinar Whitepaper</h2>
+            <p class="text-slate-300">Read the comprehensive economic and technical architecture document.</p>
+        </div>
+
+        <!-- 12. Wallet Check Tab -->
+        <div id="walletcheck" class="tab-content space-y-4">
+            <h2 class="text-2xl font-bold text-amber-400">Wallet Balance & Status Check</h2>
+            <p class="text-slate-300">Check your gold reserves, token balance, and ZK-KYC verification status.</p>
+        </div>
+
+        <!-- 13. Login / Create Account Tab -->
+        <div id="login" class="tab-content space-y-4">
+            <h2 class="text-2xl font-bold text-emerald-400">Login / Create Account</h2>
+            <p class="text-slate-300">Access your secure DDN portal.</p>
+        </div>
 
     </main>
 
-    <!-- JavaScript Tab Switcher Logic -->
+    <!-- JavaScript Controller -->
     <script>
         function switchTab(tabId, event) {
-            // Hide all tab contents
-            const contents = document.querySelectorAll('.tab-content');
-            contents.forEach(content => content.classList.remove('active'));
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
 
-            // Remove active styles from all buttons
-            const buttons = document.querySelectorAll('.tab-btn');
-            buttons.forEach(btn => {
-                btn.classList.remove('bg-amber-500', 'text-slate-950', 'shadow-lg', 'shadow-amber-500/20');
-                btn.classList.add('text-slate-300', 'hover:bg-slate-800', 'hover:text-white');
+            // Reset all buttons style
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 hover:text-white";
             });
 
-            // Show target tab content
-            document.getElementById(tabId).classList.add('active');
+            // Show active tab content
+            const targetTab = document.getElementById(tabId);
+            if(targetTab) {
+                targetTab.classList.add('active');
+            }
 
             // Highlight clicked button
             const clickedBtn = event.currentTarget;
-            clickedBtn.classList.remove('text-slate-300', 'hover:bg-slate-800', 'hover:text-white');
-            clickedBtn.classList.add('bg-amber-500', 'text-slate-950', 'shadow-lg', 'shadow-amber-500/20');
+            clickedBtn.className = "tab-btn px-3 py-1.5 rounded-full text-xs font-medium transition-all bg-amber-500 text-slate-950 font-bold shadow";
         }
     </script>
 </body>
