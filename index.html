@@ -1,7 +1,640 @@
-<!-- Footer -->
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIGITAL DINAR v3.1 ENTERPRISE | Shariah-Compliant RWA & Stablecoin Ecosystem</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            50: '#fdfce8',
+                            100: '#fbf7c5',
+                            200: '#f6ee8b',
+                            300: '#efe04e',
+                            400: '#e5cd24',
+                            500: '#cca816',
+                            600: '#aa8210',
+                            700: '#876110',
+                            800: '#6f4e13',
+                            900: '#5c4014',
+                            950: '#352309',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        ::-webkit-scrollbar { height: 6px; width: 6px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #cca816; border-radius: 3px; }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col justify-between selection:bg-gold-500 selection:text-zinc-950">
+
+    <!-- Sticky Header -->
+    <header class="sticky top-0 z-50 bg-zinc-900/95 backdrop-blur border-b border-gold-500/20 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-zinc-950 font-bold text-xl shadow-md shadow-gold-500/20">
+                    🪙
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-wider text-gold-400 flex items-center gap-2">
+                        DIGITAL DINAR v3.1 ENTERPRISE
+                        <span id="creator-admin-badge" class="hidden text-xs bg-gold-500 text-zinc-950 font-semibold px-2 py-0.5 rounded-full shadow">⚡ Creator Admin Mode Active</span>
+                    </h1>
+                    <p class="text-xs text-zinc-400">Shariah-Compliant Gold & Silver RWA Settlement Network</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div id="header-user-status" class="hidden items-center gap-2 bg-zinc-800/80 px-3 py-1.5 rounded-lg border border-gold-500/30 text-xs">
+                    <span class="text-gold-400 font-medium" id="header-username">User</span>
+                    <span class="text-zinc-400 font-mono" id="header-wallet-short">DDN_...</span>
+                    <button onclick="userLogout()" class="text-red-400 hover:text-red-300 ml-2 font-semibold">Logout</button>
+                </div>
+                <div id="live-ticker" class="hidden sm:flex items-center gap-2 text-xs bg-zinc-800/60 px-3 py-1.5 rounded-lg border border-zinc-700">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>1 DDN = 0.0870g 24k Gold ($7.47)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. DEMO / EDUCATIONAL BANNER (EXACT TEXT) -->
+        <div class="bg-gold-500 text-zinc-950 px-4 py-2 text-center text-xs font-bold tracking-wide shadow-inner overflow-x-auto whitespace-nowrap">
+            DEMO / EDUCATIONAL PROJECT - Not Legal Tender | Not Redeemable For Cash | No Real Gold Backing Yet | Values Are Theoretical
+        </div>
+
+        <!-- Navigation Tabs Container (2. MOBILE NAVIGATION & RESPONSIVE) -->
+        <nav class="bg-zinc-900/90 border-t border-zinc-800 px-4 py-2">
+            <div class="max-w-7xl mx-auto overflow-x-auto whitespace-nowrap flex items-center gap-2 no-scrollbar" id="nav-tabs-container">
+                <button onclick="switchTab('explorer')" class="nav-btn px-4 py-2 rounded-lg text-xs font-semibold transition-all bg-gold-500 text-zinc-950 shadow shrink-0" data-target="explorer">Explorer</button>
+                <button onclick="switchTab('airdrop')" class="nav-btn px-4 py-2 rounded-lg text-xs font-semibold transition-all bg-zinc-800 text-zinc-300 hover:bg-zinc-700 shrink-0" data-target="airdrop">8,000 DDN Airdrop</button>
+                <button onclick="switchTab('onboarding')" class="nav-btn px-4 py-2 rounded-lg text-xs font-semibold transition-all bg-zinc-800 text-zinc-300 hover:bg-zinc-700 shrink-0" data-target="onboarding">Secure Onboarding</button>
+                <button onclick="switchTab('transfer')" class="nav-btn px-4 py-2 rounded-lg text-xs font-semibold transition-all bg-zinc-800 text-zinc-300 hover:bg-zinc-700 shrink-0" data-target="transfer">Transfer / P2P</button>
+                <button onclick="switchTab('vault')" class="nav-btn px-4 py-2 rounded-lg text-xs font-semibold transition-all bg-zinc-800 text-zinc-300 hover:bg-zinc-700 shrink-0" data-target="vault">RWA & Vault</button>
+                <button onclick="switchTab('dao')" class="nav-btn px-4 py-2 rounded-lg text-xs font-semibold transition-all bg-zinc-800 text-zinc-300 hover:bg-zinc-700 shrink-0" data-target="dao">Shariah DAO</button>
+                <button onclick="switchTab('amm')" class="nav-btn px-4 py-2 rounded-lg text-xs font-semibold transition-all bg-zinc-800 text-zinc-300 hover:bg-zinc-700 shrink-0" data-target="amm">Mudarabah AMM</button>
+                <button onclick="switchTab('bridge')" class="nav-btn px-4 py-2 rounded-lg text-xs font-semibold transition-all bg-zinc-800 text-zinc-300 hover:bg-zinc-700 shrink-0" data-target="bridge">Bridge</button>
+                <button onclick="switchTab('zakat')" class="nav-btn px-4 py-2 rounded-lg text-xs font-semibold transition-all bg-zinc-800 text-zinc-300 hover:bg-zinc-700 shrink-0" data-target="zakat">Zakat</button>
+                <button onclick="switchTab('whitepaper')" class="nav-btn px-4 py-2 rounded-lg text-xs font-semibold transition-all bg-zinc-800 text-zinc-300 hover:bg-zinc-700 shrink-0" data-target="whitepaper">White Paper</button>
+                <button onclick="switchTab('wallet')" class="nav-btn px-4 py-2 rounded-lg text-xs font-semibold transition-all bg-zinc-800 text-zinc-300 hover:bg-zinc-700 shrink-0" data-target="wallet">Wallet Check</button>
+                <button onclick="switchTab('login')" class="nav-btn px-4 py-2 rounded-lg text-xs font-semibold transition-all bg-zinc-800 text-zinc-300 hover:bg-zinc-700 shrink-0" data-target="login">Login / Create Account</button>
+                <!-- Creator Tab (Hidden by default, unlocked via hash) -->
+                <button id="creator-nav-tab" onclick="openCreatorTab()" class="nav-btn hidden px-4 py-2 rounded-lg text-xs font-semibold transition-all bg-amber-600 text-zinc-950 shadow hover:bg-amber-500 shrink-0" data-target="creator">🔐 Creator Control Panel</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full">
+
+        <!-- 1. EXPLORER TAB -->
+        <section id="tab-explorer" class="tab-content space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl">
+                <div>
+                    <h2 class="text-xl font-bold text-gold-400">Network Explorer & Block Stream</h2>
+                    <p class="text-xs text-zinc-400 mt-1">Real-time simulated proof-of-reserves blocks on Digital Dinar Enterprise ledger.</p>
+                </div>
+                <button onclick="refreshBlocks()" class="w-full sm:w-auto bg-gold-500 hover:bg-gold-400 text-zinc-950 font-bold px-4 py-2 rounded-xl text-xs transition shadow">Refresh Blocks</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 shadow">
+                    <span class="text-xs text-zinc-400">Latest Block</span>
+                    <h3 class="text-xl font-bold text-gold-400 mt-1">#14,892,301</h3>
+                    <p class="text-[10px] text-emerald-400 mt-1">Consensus: Proof of Reserves</p>
+                </div>
+                <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 shadow">
+                    <span class="text-xs text-zinc-400">Active Validators</span>
+                    <h3 class="text-xl font-bold text-gold-400 mt-1">54 Shariah Nodes</h3>
+                    <p class="text-[10px] text-zinc-400 mt-1">Proof of Authority</p>
+                </div>
+                <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 shadow">
+                    <span class="text-xs text-zinc-400">Gold Reserves Locked</span>
+                    <h3 class="text-xl font-bold text-gold-400 mt-1">1,250,000 Grams</h3>
+                    <p class="text-[10px] text-zinc-400 mt-1">Demo Status: Simulated PoR</p>
+                </div>
+                <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 shadow">
+                    <span class="text-xs text-zinc-400">Average Block Time</span>
+                    <h3 class="text-xl font-bold text-gold-400 mt-1">2.4 Seconds</h3>
+                    <p class="text-[10px] text-emerald-400 mt-1">Instant Finality</p>
+                </div>
+            </div>
+            <div class="bg-zinc-900 rounded-2xl border border-zinc-800 p-6 shadow-xl overflow-x-auto">
+                <h3 class="font-bold text-sm text-zinc-200 mb-4">Recent Blocks</h3>
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="border-b border-zinc-800 text-zinc-400">
+                            <th class="pb-3">Block #</th>
+                            <th class="pb-3">Hash</th>
+                            <th class="pb-3">Transactions</th>
+                            <th class="pb-3">Validator</th>
+                            <th class="pb-3">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="blocks-table-body" class="divide-y divide-zinc-800/60 font-mono">
+                        <tr>
+                            <td class="py-3 text-gold-400">#14,892,301</td>
+                            <td class="py-3 text-zinc-400">0x7f83...b412</td>
+                            <td class="py-3">24 txs</td>
+                            <td class="py-3">Node-Dubai-01</td>
+                            <td class="py-3 text-zinc-500">Just now</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 text-gold-400">#14,892,300</td>
+                            <td class="py-3 text-zinc-400">0x3e21...9c80</td>
+                            <td class="py-3">18 txs</td>
+                            <td class="py-3">Node-KualaLumpur-04</td>
+                            <td class="py-3 text-zinc-500">2s ago</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 text-gold-400">#14,892,299</td>
+                            <td class="py-3 text-zinc-400">0x9a10...4f21</td>
+                            <td class="py-3">31 txs</td>
+                            <td class="py-3">Node-London-02</td>
+                            <td class="py-3 text-zinc-500">5s ago</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 2. AIRDROP TAB -->
+        <section id="tab-airdrop" class="tab-content hidden space-y-6">
+            <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl max-w-2xl mx-auto">
+                <h2 class="text-xl font-bold text-gold-400 text-center">8,000 DDN Total Pool — Merkle Claim Engine</h2>
+                <p class="text-xs text-zinc-400 text-center mt-1">Claim your early adopter allocation backed by simulated gold reserves.</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 my-6 text-center">
+                    <div class="bg-zinc-800/60 p-3 rounded-xl border border-zinc-700">
+                        <span class="text-[10px] text-zinc-400">Total Pool</span>
+                        <h4 class="font-bold text-sm text-gold-400 mt-1">8,000 DDN</h4>
+                    </div>
+                    <div class="bg-zinc-800/60 p-3 rounded-xl border border-zinc-700">
+                        <span class="text-[10px] text-zinc-400">Claimed Pool</span>
+                        <h4 class="font-bold text-sm text-gold-400 mt-1">3,350 DDN</h4>
+                    </div>
+                    <div class="bg-zinc-800/60 p-3 rounded-xl border border-zinc-700">
+                        <span class="text-[10px] text-zinc-400">Remaining Pool</span>
+                        <h4 class="font-bold text-sm text-emerald-400 mt-1">4,650 DDN</h4>
+                    </div>
+                    <div class="bg-zinc-800/60 p-3 rounded-xl border border-zinc-700">
+                        <span class="text-[10px] text-zinc-400">Gold Lock</span>
+                        <h4 class="font-bold text-sm text-gold-400 mt-1">696g 24k</h4>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Wallet Address for Airdrop</label>
+                        <input type="text" id="airdrop-wallet-input" placeholder="Enter DDN_... wallet address" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500 font-mono">
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button onclick="checkAirdropEligibility()" class="w-full sm:flex-1 bg-zinc-800 hover:bg-zinc-700 text-gold-400 font-bold py-3 rounded-xl text-xs transition border border-gold-500/30">Check Eligibility</button>
+                        <button onclick="claimAirdropToken()" class="w-full sm:flex-1 bg-gold-500 hover:bg-gold-400 text-zinc-950 font-bold py-3 rounded-xl text-xs transition shadow">Claim Airdrop</button>
+                    </div>
+                    <div id="airdrop-status-box" class="hidden p-4 rounded-xl text-xs bg-zinc-950 border border-zinc-800"></div>
+                    <div class="pt-4 border-t border-zinc-800 flex flex-col sm:flex-row justify-between items-center gap-3">
+                        <span class="text-xs text-zinc-400">Want to notify team or yourself?</span>
+                        <button onclick="sendAirdropEmailNotice()" class="w-full sm:w-auto bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs px-3 py-2 rounded-lg border border-zinc-700">Send Email Notice</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. SECURE ONBOARDING TAB -->
+        <section id="tab-onboarding" class="tab-content hidden space-y-6">
+            <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl max-w-2xl mx-auto">
+                <h2 class="text-xl font-bold text-gold-400 text-center">Secure Account & Wallet Onboarding</h2>
+                <p class="text-xs text-zinc-400 text-center mt-1">Generate your decentralized Web3 wallet with cryptographic seed phrase encryption.</p>
+                
+                <div id="step1-container" class="space-y-4 mt-6">
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Full Name</label>
+                        <input type="text" id="onb-name" placeholder="Enter your full name" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Email Address</label>
+                        <input type="email" id="onb-email" value="mdsubhanpasha@icloud.com" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Master Password (min 8 chars)</label>
+                        <input type="password" id="onb-password" placeholder="••••••••" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500">
+                    </div>
+                    <button onclick="generateEncryptedWallet()" class="w-full bg-gold-500 hover:bg-gold-400 text-zinc-950 font-bold py-3 rounded-xl text-xs transition shadow">Step 1: Generate Wallet + Seed + Encrypt</button>
+                </div>
+
+                <div id="onb-result" class="hidden space-y-4 mt-6 p-4 rounded-xl bg-zinc-950 border border-zinc-800">
+                    <h3 class="text-xs font-bold text-gold-400">Generated Credentials (Save Safely)</h3>
+                    <div class="space-y-2">
+                        <div>
+                            <span class="text-[10px] text-zinc-400 block">Wallet Address:</span>
+                            <span id="onb-wallet-output" class="font-mono text-xs text-emerald-400"></span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-zinc-400 block">12-Word Seed Phrase:</span>
+                            <div id="onb-seed-output" class="font-mono text-xs bg-zinc-900 p-3 rounded-lg border border-zinc-800 text-gold-300 select-all"></div>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-zinc-400 block">Encrypted Backup Blob:</span>
+                            <textarea id="onb-blob-output" readonly class="w-full h-20 bg-zinc-900 font-mono text-[10px] p-2 rounded-lg border border-zinc-800 text-zinc-400 resize-none"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="step2-container" class="hidden space-y-4 mt-6 pt-6 border-t border-zinc-800">
+                    <label class="flex items-start sm:items-center gap-3 cursor-pointer bg-zinc-950 p-4 rounded-xl border border-zinc-800">
+                        <input type="checkbox" id="onb-seed-confirm" onchange="toggleStep2Complete()" class="w-4 h-4 mt-0.5 sm:mt-0 rounded border-zinc-700 text-gold-500 focus:ring-gold-500 bg-zinc-900 shrink-0">
+                        <span class="text-xs text-zinc-300 font-medium">Step 2: I have written my 12-word seed phrase securely on paper and stored it offline.</span>
+                    </label>
+                    <div id="step2-actions" class="hidden flex flex-col sm:flex-row gap-3">
+                        <button onclick="dispatchEncryptedCredentials()" class="w-full sm:flex-1 bg-zinc-800 hover:bg-zinc-700 text-gold-400 font-bold py-3 rounded-xl text-xs transition border border-gold-500/30">Dispatch Credentials Email</button>
+                        <button onclick="exportEncryptedBackupFile()" class="w-full sm:flex-1 bg-gold-500 hover:bg-gold-400 text-zinc-950 font-bold py-3 rounded-xl text-xs transition shadow">Export Encrypted Backup JSON</button>
+                    </div>
+                    <button onclick="testDecryptBackup()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs py-2 rounded-xl border border-zinc-700">Test Decrypt Backup</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. TRANSFER / P2P TAB -->
+        <section id="tab-transfer" class="tab-content hidden space-y-6">
+            <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl max-w-2xl mx-auto space-y-4">
+                <h2 class="text-xl font-bold text-gold-400">Peer-to-Peer (P2P) Secure Transfer</h2>
+                <p class="text-xs text-zinc-400">Send Digital Dinar instantly with cryptographic verification and zero interest (Riba-free).</p>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-300 mb-1">Recipient Wallet Address</label>
+                    <input type="text" id="p2p-recipient" placeholder="DDN_..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500 font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-300 mb-1">Amount (DDN)</label>
+                    <input type="number" id="p2p-amount" placeholder="0.00" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500 font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-300 mb-1">Shariah Compliance Memo</label>
+                    <input type="text" id="p2p-memo" placeholder="e.g. Settlement for goods / Sadaqah / Gift" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500">
+                </div>
+                <button onclick="sendP2PTransfer()" class="w-full bg-gold-500 hover:bg-gold-400 text-zinc-950 font-bold py-3 rounded-xl text-xs transition shadow">Execute P2P Transfer</button>
+                <div id="p2p-result" class="hidden p-4 rounded-xl text-xs bg-zinc-950 border border-zinc-800"></div>
+            </div>
+        </section>
+
+        <!-- 5. RWA & VAULT TAB -->
+        <section id="tab-vault" class="tab-content hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl">
+                <div>
+                    <h2 class="text-xl font-bold text-gold-400">Real World Asset (RWA) Vault Reserves</h2>
+                    <p class="text-xs text-zinc-400 mt-1">Physical allocated gold & silver stored in high-security independent vaults.</p>
+                </div>
+                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-xl text-xs font-semibold">SIMULATED - Demo Verification</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 shadow">
+                    <span class="text-xs text-zinc-400">24k Gold Reserves</span>
+                    <h3 class="text-xl font-bold text-gold-400 mt-1">1,250,000 Grams</h3>
+                    <p class="text-[10px] text-zinc-400 mt-1">Demo Status: Simulated PoR - Not A Real Audit</p>
+                </div>
+                <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 shadow">
+                    <span class="text-xs text-zinc-400">850k Silver Reserves</span>
+                    <h3 class="text-xl font-bold text-zinc-200 mt-1">850,000 Grams</h3>
+                    <p class="text-[10px] text-zinc-400 mt-1">Demo Status: Simulated Audit - Educational Only</p>
+                </div>
+                <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 shadow">
+                    <span class="text-xs text-zinc-400">Gold Peg Ratio</span>
+                    <h3 class="text-xl font-bold text-gold-400 mt-1">0.0870g / DDN</h3>
+                    <p class="text-[10px] text-zinc-400 mt-1">SIMULATED - Demo Verification</p>
+                </div>
+                <div class="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 shadow">
+                    <span class="text-xs text-zinc-400">Silver Peg Ratio</span>
+                    <h3 class="text-xl font-bold text-zinc-200 mt-1">0.0994g / DDN</h3>
+                    <p class="text-[10px] text-zinc-400 mt-1">SIMULATED - Demo Verification</p>
+                </div>
+            </div>
+            <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl space-y-4">
+                <h3 class="font-bold text-sm text-gold-400">Gold Equivalent Calculator</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Enter DDN Amount</label>
+                        <input type="number" id="calc-ddn-input" oninput="calculateGoldEquivalent()" placeholder="1000" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500 font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Equivalent Gold (24k)</label>
+                        <div id="calc-gold-output" class="bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-gold-400 font-mono font-bold flex items-center">0.00 Grams</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. SHARIAH DAO TAB -->
+        <section id="tab-dao" class="tab-content hidden space-y-6">
+            <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gold-400">Shariah Supervisory Board DAO</h2>
+                        <p class="text-xs text-zinc-400 mt-1">Governance proposals and compliance verification by certified Islamic scholars.</p>
+                    </div>
+                    <span class="bg-gold-500/10 text-gold-400 border border-gold-500/30 px-3 py-1.5 rounded-xl text-xs font-semibold">AAOIFI Compliant Framework</span>
+                </div>
+                <div class="space-y-4" id="dao-proposals-container">
+                    <div class="bg-zinc-950 p-5 rounded-xl border border-zinc-800 space-y-3" data-proposal-id="DP-004">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                            <span class="text-xs font-bold text-gold-400">Proposal #004: Airdrop 8,000 DDN Pool Expansion</span>
+                            <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-full font-semibold">Active Voting</span>
+                        </div>
+                        <p class="text-xs text-zinc-300">Authorize distribution of 8,000 DDN community airdrop pool backed by 696g 24k gold lock.</p>
+                        <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2">
+                            <div class="text-xs text-zinc-400 dao-tally">For: <span class="votes-for">1,420</span> | Against: <span class="votes-against">45</span></div>
+                            <div class="flex gap-2 w-full sm:w-auto">
+                                <button onclick="voteProposal('DP-004', 'FOR')" class="flex-1 sm:flex-initial bg-gold-500 hover:bg-gold-400 text-zinc-950 font-bold px-4 py-2 rounded-lg text-xs">Vote For</button>
+                                <button onclick="voteProposal('DP-004', 'AGAINST')" class="flex-1 sm:flex-initial bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 py-2 rounded-lg text-xs">Vote Against</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-zinc-950 p-5 rounded-xl border border-zinc-800 space-y-3" data-proposal-id="DP-001">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                            <span class="text-xs font-bold text-gold-400">Proposal #001: Add 50,000g Gold Reserve in Dubai Vault</span>
+                            <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-full font-semibold">Active Voting</span>
+                        </div>
+                        <p class="text-xs text-zinc-300">Integrate 50,000g allocated 24k physical gold bars to expand minting capacity.</p>
+                        <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2">
+                            <div class="text-xs text-zinc-400 dao-tally">For: <span class="votes-for">2,890</span> | Against: <span class="votes-against">12</span></div>
+                            <div class="flex gap-2 w-full sm:w-auto">
+                                <button onclick="voteProposal('DP-001', 'FOR')" class="flex-1 sm:flex-initial bg-gold-500 hover:bg-gold-400 text-zinc-950 font-bold px-4 py-2 rounded-lg text-xs">Vote For</button>
+                                <button onclick="voteProposal('DP-001', 'AGAINST')" class="flex-1 sm:flex-initial bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 py-2 rounded-lg text-xs">Vote Against</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-zinc-950 p-5 rounded-xl border border-zinc-800 space-y-3" data-proposal-id="DP-003">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                            <span class="text-xs font-bold text-gold-400">Proposal #003: Creator Mint 10,000 DDN Allocation</span>
+                            <span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-full font-semibold">Active Voting</span>
+                        </div>
+                        <p class="text-xs text-zinc-300">Approve multi-sig genesis allocation for platform creator ecosystem development.</p>
+                        <div class="flex flex-col sm:flex-row justify-between items-center gap-3 pt-2">
+                            <div class="text-xs text-zinc-400 dao-tally">For: <span class="votes-for">950</span> | Against: <span class="votes-against">120</span></div>
+                            <div class="flex gap-2 w-full sm:w-auto">
+                                <button onclick="voteProposal('DP-003', 'FOR')" class="flex-1 sm:flex-initial bg-gold-500 hover:bg-gold-400 text-zinc-950 font-bold px-4 py-2 rounded-lg text-xs">Vote For</button>
+                                <button onclick="voteProposal('DP-003', 'AGAINST')" class="flex-1 sm:flex-initial bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-4 py-2 rounded-lg text-xs">Vote Against</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. MUDARABAH AMM TAB -->
+        <section id="tab-amm" class="tab-content hidden space-y-6">
+            <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl max-w-2xl mx-auto space-y-6">
+                <div>
+                    <h2 class="text-xl font-bold text-gold-400">Mudarabah Profit-Sharing AMM</h2>
+                    <p class="text-xs text-zinc-400 mt-1">Riba-free liquidity pools adhering to Mudarabah partnership principles (Rab al-Mal & Mudarib).</p>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Staking Pool Amount (DDN)</label>
+                        <input type="number" id="amm-stake-input" placeholder="1000" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500 font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Staking Duration (Months)</label>
+                        <select id="amm-duration" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500">
+                            <option value="3">3 Months (Est. 6.5% Annualized Profit Share)</option>
+                            <option value="6">6 Months (Est. 8.2% Annualized Profit Share)</option>
+                            <option value="12">12 Months (Est. 11.4% Annualized Profit Share)</option>
+                        </select>
+                    </div>
+                    <button onclick="calculateMudarabahProfit()" class="w-full bg-gold-500 hover:bg-gold-400 text-zinc-950 font-bold py-3 rounded-xl text-xs transition shadow">Calculate & Stake Mudarabah Pool</button>
+                    <div id="amm-result" class="hidden p-4 rounded-xl text-xs bg-zinc-950 border border-zinc-800"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. BRIDGE TAB -->
+        <section id="tab-bridge" class="tab-content hidden space-y-6">
+            <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl max-w-2xl mx-auto space-y-6">
+                <div>
+                    <h2 class="text-xl font-bold text-gold-400">Secure Cross-Chain Bridge</h2>
+                    <p class="text-xs text-zinc-400 mt-1">Transfer Digital Dinar across Ethereum, Arbitrum, Binance Smart Chain, and Polygon with multi-sig escrow.</p>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Destination Network</label>
+                        <select id="bridge-network" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500">
+                            <option value="Ethereum">Ethereum Mainnet (ERC-20)</option>
+                            <option value="Arbitrum">Arbitrum One Layer 2</option>
+                            <option value="BSC">Binance Smart Chain (BEP-20)</option>
+                            <option value="Polygon">Polygon PoS Network</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Amount to Bridge (DDN)</label>
+                        <input type="number" id="bridge-amount" placeholder="500" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500 font-mono">
+                    </div>
+                    <button onclick="executeSecureBridge()" class="w-full bg-gold-500 hover:bg-gold-400 text-zinc-950 font-bold py-3 rounded-xl text-xs transition shadow">Execute Cross-Chain Bridge</button>
+                    <div id="bridge-result" class="hidden p-4 rounded-xl text-xs bg-zinc-950 border border-zinc-800"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. ZAKAT TAB -->
+        <section id="tab-zakat" class="tab-content hidden space-y-6">
+            <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl max-w-2xl mx-auto space-y-6">
+                <div>
+                    <h2 class="text-xl font-bold text-gold-400">Automated Zakat Calculator & Purifier</h2>
+                    <p class="text-xs text-zinc-400 mt-1">Calculate precise 2.5% annual Zakat obligation on gold-backed digital assets when reaching Nisab threshold (87.48g Gold).</p>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Total DDN Balance in Portfolio</label>
+                        <input type="number" id="zakat-balance" placeholder="10000" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500 font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Hawl Completed (1 Lunar Year Held)?</label>
+                        <select id="zakat-hawl" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500">
+                            <option value="yes">Yes - Held for 1 Lunar Year</option>
+                            <option value="no">No - Newly Acquired</option>
+                        </select>
+                    </div>
+                    <button onclick="calculateZakatObligation()" class="w-full bg-gold-500 hover:bg-gold-400 text-zinc-950 font-bold py-3 rounded-xl text-xs transition shadow">Calculate Zakat Obligation</button>
+                    <div id="zakat-result" class="hidden p-4 rounded-xl text-xs bg-zinc-950 border border-zinc-800"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10. WHITE PAPER TAB -->
+        <section id="tab-whitepaper" class="tab-content hidden space-y-6">
+            <div class="bg-zinc-900 p-8 rounded-2xl border border-zinc-800 shadow-xl max-w-4xl mx-auto space-y-6 text-zinc-300 text-xs leading-relaxed">
+                <div class="border-b border-zinc-800 pb-4">
+                    <h2 class="text-2xl font-bold text-gold-400">Digital Dinar White Paper v3.1</h2>
+                    <p class="text-zinc-400 mt-1">Shariah-Compliant Decentralized Gold Standard & Real World Asset Settlement Protocol</p>
+                </div>
+                <div class="space-y-4">
+                    <h3 class="font-bold text-sm text-gold-400">1. Executive Summary & Philosophy</h3>
+                    <p>Digital Dinar (DDN) is an enterprise-grade decentralized stablecoin and RWA settlement network engineered strictly according to AAOIFI Shariah standards. Every DDN token represents verified ownership claim over physical 24k gold stored in secure audited vaults.</p>
+                    
+                    <h3 class="font-bold text-sm text-gold-400">2. Tokenomics Architecture</h3>
+                    <ul class="list-disc pl-5 space-y-1 text-zinc-400">
+                        <li><strong class="text-zinc-200">Public Mining Pool:</strong> 97,900,000 DDN</li>
+                        <li><strong class="text-zinc-200">Primary Genesis Reserve:</strong> 2,100,000 DDN</li>
+                        <li><strong class="text-zinc-200">Community Airdrop Pool:</strong> 8,000 DDN (Backed by 696g 24k gold lock)</li>
+                    </ul>
+
+                    <h3 class="font-bold text-sm text-gold-400">3. Shariah Compliance Principles</h3>
+                    <p>Eliminating Riba (interest), Gharar (excessive uncertainty), and Maysir (gambling) through immediate spot settlement, 100% tangible physical backing, and transparent smart contract auditing.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 11. WALLET CHECK TAB -->
+        <section id="tab-wallet" class="tab-content hidden space-y-6">
+            <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl max-w-2xl mx-auto space-y-6">
+                <div>
+                    <h2 class="text-xl font-bold text-gold-400">Wallet Check & Recovery</h2>
+                    <p class="text-xs text-zinc-400 mt-1">Verify balance, portfolio value, and recover wallet using encrypted backup or seed phrase.</p>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Wallet Address</label>
+                        <input type="text" id="check-wallet-address" placeholder="DDN_..." class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500 font-mono">
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button onclick="verifyWalletBalance()" class="w-full sm:flex-1 bg-gold-500 hover:bg-gold-400 text-zinc-950 font-bold py-3 rounded-xl text-xs transition shadow">Verify Balance</button>
+                        <button onclick="recoverWallet()" class="w-full sm:flex-1 bg-zinc-800 hover:bg-zinc-700 text-gold-400 font-bold py-3 rounded-xl text-xs transition border border-gold-500/30">Recover Wallet</button>
+                    </div>
+                    <div id="wallet-check-result" class="hidden p-4 rounded-xl text-xs bg-zinc-950 border border-zinc-800"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 12. LOGIN / CREATE ACCOUNT TAB -->
+        <section id="tab-login" class="tab-content hidden space-y-6">
+            <div class="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl max-w-md mx-auto space-y-6">
+                <div>
+                    <h2 class="text-xl font-bold text-gold-400 text-center">User Portal Login</h2>
+                    <p class="text-xs text-zinc-400 text-center mt-1">Access your Digital Dinar dashboard securely.</p>
+                </div>
+
+                <div id="login-container" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Email Address</label>
+                        <input type="email" id="login-email" value="mdsubhanpasha@icloud.com" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-300 mb-1">Password</label>
+                        <input type="password" id="login-password" placeholder="••••••••" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500">
+                    </div>
+                    <button onclick="userLogin()" class="w-full bg-gold-500 hover:bg-gold-400 text-zinc-950 font-bold py-3 rounded-xl text-xs transition shadow">Login to Dashboard</button>
+                </div>
+
+                <!-- User Dashboard View -->
+                <div id="user-dashboard" class="hidden space-y-4">
+                    <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-2">
+                        <h3 class="text-sm font-bold text-gold-400" id="dash-welcome">Welcome, User</h3>
+                        <p class="text-[10px] text-zinc-400 font-mono" id="dash-wallet">Wallet: DDN_...</p>
+                        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-zinc-800 text-xs">
+                            <div>
+                                <span class="text-[10px] text-zinc-400 block">Balance:</span>
+                                <span class="font-bold text-gold-400" id="dash-balance">0 DDN</span>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-zinc-400 block">Gold Peg:</span>
+                                <span class="font-bold text-zinc-200" id="dash-gold-peg">0.00g</span>
+                            </div>
+                            <div class="col-span-2 pt-1">
+                                <span class="text-[10px] text-zinc-400 block">Portfolio Value:</span>
+                                <span class="font-bold text-emerald-400" id="dash-portfolio">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-3 pt-2">
+                        <h4 class="text-xs font-bold text-zinc-200">Mining & Rewards</h4>
+                        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex justify-between items-center">
+                            <div>
+                                <span class="text-xs text-zinc-300 block font-medium">Claim Mining Rewards</span>
+                                <span class="text-[10px] text-zinc-500">0.1 DDN / min (144 DDN max/day)</span>
+                            </div>
+                            <button onclick="claimMiningRewards()" class="bg-gold-500 hover:bg-gold-400 text-zinc-950 font-bold px-3 py-2 rounded-lg text-xs">Claim</button>
+                        </div>
+                    </div>
+                    <div class="space-y-3 pt-2">
+                        <h4 class="text-xs font-bold text-zinc-200">Quick P2P Send</h4>
+                        <div class="space-y-2">
+                            <input type="text" id="dash-p2p-recipient" placeholder="Recipient DDN_..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-100 font-mono">
+                            <input type="number" id="dash-p2p-amount" placeholder="Amount DDN" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-100 font-mono">
+                            <button onclick="dashSendP2P()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-gold-400 font-bold py-2 rounded-lg text-xs border border-gold-500/30">Send Transfer</button>
+                        </div>
+                    </div>
+                    <button onclick="userLogout()" class="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 font-semibold py-2.5 rounded-xl text-xs transition">Logout</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 13. CREATOR CONTROL PANEL TAB -->
+        <section id="tab-creator" class="tab-content hidden space-y-6">
+            <div class="bg-zinc-900 p-6 rounded-2xl border border-gold-500/30 shadow-2xl space-y-6 max-w-4xl mx-auto">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-zinc-800 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-gold-400 flex items-center gap-2">
+                            🔐 Creator Control Panel
+                            <span class="text-xs bg-gold-500 text-zinc-950 px-2 py-0.5 rounded font-semibold">Master Admin</span>
+                        </h2>
+                        <p class="text-xs text-zinc-400 mt-1">Multi-signature minting, batch distributions, and network administration.</p>
+                    </div>
+                    <button onclick="lockCreatorPanel()" class="bg-red-500/10 text-red-400 border border-red-500/30 px-3 py-1.5 rounded-xl text-xs font-semibold hover:bg-red-500/20">Lock Creator Panel</button>
+                </div>
+
+                <!-- Multi-Sig Minting Section -->
+                <div class="bg-zinc-950 p-6 rounded-xl border border-zinc-800 space-y-4">
+                    <h3 class="text-sm font-bold text-gold-400">Multi-Sig Gold Minting & Issuance</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-300 mb-1">Gold Grams (24k)</label>
+                            <input type="number" id="creator-gold-grams" oninput="calculateMaxMint()" placeholder="870" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500 font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-300 mb-1">Calculated Max Mint (DDN)</label>
+                            <div id="creator-max-mint" class="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-gold-400 font-mono font-bold flex items-center">0 DDN</div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-300 mb-1">Vault Certification Hash</label>
+                            <input type="text" id="creator-cert-hash" placeholder="0xVaultCert..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500 font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-300 mb-1">Master Admin PIN / Password</label>
+                            <input type="password" id="creator-admin-password" placeholder="••••••••" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-100 focus:outline-none focus:border-gold-500">
+                        </div>
+                    </div>
+                    <button onclick="executeMultiSigMint()" class="w-full bg-gold-500 hover:bg-gold-400 text-zinc-950 font-bold py-3 rounded-xl text-xs transition shadow">Execute Multi-Sig Mint (3-of-5)</button>
+                    <div id="creator-mint-log" class="hidden p-4 rounded-xl text-xs bg-zinc-900 border border-zinc-800 space-y-1 font-mono"></div>
+                </div>
+
+                <!-- Batch Distribution & Invitations -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-zinc-950 p-5 rounded-xl border border-zinc-800 space-y-3">
+                        <h4 class="text-xs font-bold text-gold-400">Send Creator Invitation</h4>
+                        <input type="email" id="invitation-email" placeholder="recipient@example.com" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-100">
+                        <button onclick="sendCreatorInvitation()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-gold-400 font-bold py-2 rounded-lg text-xs border border-gold-500/30">Dispatch Invitation</button>
+                    </div>
+                    <div class="bg-zinc-950 p-5 rounded-xl border border-zinc-800 space-y-3">
+                        <h4 class="text-xs font-bold text-gold-400">Execute Batch Distribution</h4>
+                        <input type="text" id="batch-csv" placeholder="DDN_addr1,50; DDN_addr2,100" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-100 font-mono">
+                        <button onclick="executeBatchDistribution()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-gold-400 font-bold py-2 rounded-lg text-xs border border-gold-500/30">Run Batch Transfer</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
     <footer class="bg-zinc-900 border-t border-zinc-800 mt-12 py-6 text-center text-xs text-zinc-400 space-y-3">
-        <!-- FIX 2: Demo Disclaimer Banner in Footer -->
-        <div class="bg-gold-500/10 text-gold-400 border border-gold-500/30 py-2 px-4 max-w-3xl mx-auto rounded-lg font-semibold">
+        <!-- 1. DEMO / EDUCATIONAL BANNER IN FOOTER (EXACT TEXT) -->
+        <div class="bg-gold-500/10 text-gold-400 border border-gold-500/30 py-2 px-4 max-w-3xl mx-auto rounded-lg font-semibold overflow-x-auto whitespace-nowrap">
             DEMO / EDUCATIONAL PROJECT - Not Legal Tender | Not Redeemable For Cash | No Real Gold Backing Yet | Values Are Theoretical
         </div>
         <p>&copy; 2026 DIGITAL DINAR v3.1 ENTERPRISE. All Rights Reserved. Shariah-Compliant RWA Architecture.</p>
@@ -16,13 +649,12 @@
             checkExistingSession();
             checkCreatorHashOnLoad();
             
-            // Listen for hash changes to detect creator link
             window.addEventListener('hashchange', () => {
                 checkCreatorHashOnLoad();
             });
         });
 
-        // Hash Check for Creator Tab
+        // 4. CREATOR PANEL SECURITY
         function checkCreatorHashOnLoad() {
             if (window.location.hash === '#creator-master-admin-key') {
                 const creatorTab = document.getElementById('creator-nav-tab');
@@ -167,7 +799,7 @@
             alert("Airdrop notice dispatched successfully to registered system logs and email queue.");
         }
 
-        // SECURE ONBOARDING & CRYPTO FUNCTIONS (FULLY COMPLETE)
+        // 3. WEB CRYPTO ENCRYPTION (100% COMPLETE & UNTRUNCATED)
         let generatedWalletData = null;
 
         async function generateEncryptedWallet() {
@@ -430,7 +1062,7 @@
             if (months === 6) rate = 0.082;
             if (months === 12) rate = 0.114;
 
-            const totalPool = 1000000; // Simulated pool size
+            const totalPool = 1000000;
             const estProfit = (stake / totalPool) * (stake * rate * (months / 12)) * 0.70;
             resultBox.innerHTML = `<span class="text-emerald-400 font-bold">✅ Mudarabah Pool Active! Staked ${stake} DDN for ${months} months. Rab al-Mal profit share (70%): +${estProfit.toFixed(4)} DDN.</span>`;
         }
@@ -500,7 +1132,7 @@
             switchTab('wallet');
         }
 
-        // LOGIN PERSISTENCE & SESSIONS
+        // 4. LOGIN PERSISTENCE & SESSIONS
         function userLogin() {
             const email = document.getElementById('login-email').value.trim();
             const pass = document.getElementById('login-password').value;
@@ -590,7 +1222,7 @@
             alert(`Successfully sent ${amount} DDN to ${recipient}`);
         }
 
-        // CREATOR CONTROL PANEL & MINTING
+        // 4. CREATOR CONTROL PANEL & MINTING CALCULATOR
         function calculateMaxMint() {
             const gramsInput = document.getElementById('creator-gold-grams');
             const maxMintOutput = document.getElementById('creator-max-mint');
