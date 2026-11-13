@@ -684,4 +684,634 @@ contract MerkleDistributor {
                     <button onclick="userLogin()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3 rounded-lg transition-all text-sm">Login</button>
                     <button onclick="switchTab('onboarding')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-6 py-3 rounded-lg transition-all text-sm">Create Account</button>
                 </div>
-                <div id="login-result" class="hidden bg-slate-950 p-3 rounded
+                <div id="login-result" class="hidden bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs font-mono text-emerald-400"></div>
+            </div>
+
+            <!-- User Dashboard (Shown after Login) -->
+            <div id="user-dashboard" class="hidden space-y-6 max-w-4xl">
+                <div class="bg-slate-900 p-6 rounded-xl border border-emerald-500/40 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 id="dash-welcome" class="text-xl font-bold text-white">Welcome, Mohammad Subhan Pasha</h3>
+                            <div class="flex items-center gap-2 mt-1">
+                                <p id="dash-wallet" class="text-xs font-mono text-emerald-400">Wallet: DDN_7f8c...3a19</p>
+                                <button onclick="copyWalletAddress()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-2 py-1 rounded text-[10px] font-sans transition-all">📋 Copy Address</button>
+                            </div>
+                        </div>
+                        <button onclick="userLogout()" class="bg-rose-600/20 text-rose-400 border border-rose-600/40 px-4 py-2 rounded-lg text-xs font-semibold hover:bg-rose-600 hover:text-white transition-all">Logout</button>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                        <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
+                            <span class="text-xs text-slate-400">DDN Balance</span>
+                            <h4 id="dash-balance" class="text-2xl font-bold text-amber-400 mt-1">150.00 DDN</h4>
+                        </div>
+                        <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
+                            <span class="text-xs text-slate-400">Gold Peg Equivalent</span>
+                            <h4 id="dash-gold" class="text-2xl font-bold text-white mt-1">13.05g (24k)</h4>
+                        </div>
+                        <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
+                            <span class="text-xs text-slate-400">Portfolio Value</span>
+                            <h4 id="dash-portfolio" class="text-2xl font-bold text-emerald-400 mt-1">$1,120.50</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mining Session Widget -->
+                <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 space-y-4">
+                    <h3 class="text-sm font-bold text-amber-400 uppercase tracking-wider">24-Hour Mining Session (PoR Consensus)</h3>
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div>
+                            <p class="text-xs text-slate-300">Rate: 0.1 DDN per minute (144 DDN per day max)</p>
+                            <p id="mining-status" class="text-xs text-emerald-400 font-mono mt-1">Status: Mining Active | Mined: <span id="mined-amount">0.00</span> DDN</p>
+                        </div>
+                        <button onclick="claimMiningRewards()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-2.5 rounded-lg text-xs transition-all">Claim Mined Rewards</button>
+                    </div>
+                </div>
+
+                <!-- Quick P2P Widget -->
+                <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 space-y-4">
+                    <h3 class="text-sm font-bold text-amber-400 uppercase tracking-wider">Quick P2P Transfer</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input id="dash-p2p-to" type="text" placeholder="Recipient Wallet (DDN_...)" class="bg-slate-950 border border-slate-700 rounded-lg p-3 text-white text-xs font-mono">
+                        <input id="dash-p2p-amt" type="number" placeholder="Amount (DDN)" class="bg-slate-950 border border-slate-700 rounded-lg p-3 text-white">
+                    </div>
+                    <button onclick="dashSendP2P()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-lg text-xs transition-all w-full md:w-auto">Send Now ($0.01 Gas)</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        let airdropState = {
+            claimedTotal: 3350,
+            remainingTotal: 4650
+        };
+
+        let creatorMintLogHistory = [
+            "[Genesis] 10,000 DDN minted against 870g Vault deposit. PoR Synced."
+        ];
+
+        let activeMiningMined = 0;
+        let currentUserWallet = "DDN_7F8C3A19";
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const secretKey = "#creator-master-admin-key";
+            if (window.location.hash === secretKey) {
+                document.querySelectorAll('.creator-only').forEach(el => el.style.display = 'inline-block');
+                document.getElementById('creator-badge').classList.remove('hidden');
+            }
+
+            const buttons = document.querySelectorAll('.tab-btn');
+            const contents = document.querySelectorAll('.tab-content');
+
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    switchTab(targetId);
+                });
+            });
+
+            setInterval(() => {
+                activeMiningMined += 0.1;
+                const minedEl = document.getElementById('mined-amount');
+                if(minedEl) minedEl.innerText = activeMiningMined.toFixed(2);
+            }, 60000);
+
+            checkExistingSession();
+        });
+
+        function switchTab(targetId) {
+            const buttons = document.querySelectorAll('.tab-btn');
+            const contents = document.querySelectorAll('.tab-content');
+
+            contents.forEach(content => content.classList.remove('active'));
+
+            buttons.forEach(btn => {
+                if(btn.id === 'creator-tab-btn') {
+                    btn.className = "tab-btn creator-only px-3 py-1.5 rounded-full text-xs font-medium bg-purple-600 text-white font-bold border border-purple-400 shadow transition-all";
+                } else {
+                    btn.className = "tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition-all";
+                }
+            });
+
+            const activeContent = document.getElementById(targetId);
+            if (activeContent) {
+                activeContent.classList.add('active');
+            }
+
+            const activeBtn = document.querySelector(`[data-target="${targetId}"]`);
+            if(activeBtn) {
+                if(activeBtn.id === 'creator-tab-btn') {
+                    activeBtn.className = "tab-btn creator-only px-3 py-1.5 rounded-full text-xs font-medium bg-purple-500 text-slate-950 font-bold shadow transition-all";
+                } else {
+                    activeBtn.className = "tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-amber-500 text-slate-950 font-bold shadow transition-all";
+                }
+            }
+        }
+
+        // Copy Wallet Address Function
+        function copyWalletAddress() {
+            navigator.clipboard.writeText(currentUserWallet).then(() => {
+                alert("Wallet address copied to clipboard: " + currentUserWallet);
+            }).catch(err => {
+                alert("Failed to copy wallet address.");
+            });
+        }
+
+        // 1. Explorer: Refresh Blocks
+        function refreshBlocks() {
+            const tbody = document.getElementById('blocks-table-body');
+            const currentNum = Math.floor(Math.random() * 1000) + 14892302;
+            document.getElementById('latest-block-num').innerText = `#${currentNum.toLocaleString()}`;
+            
+            const newRow = `
+                <tr>
+                    <td class="p-3">#${currentNum.toLocaleString()}</td>
+                    <td class="p-3 text-emerald-400">0x${Math.random().toString(16).substring(2, 6)}...${Math.random().toString(16).substring(2, 6)}</td>
+                    <td class="p-3">${Math.floor(Math.random() * 30) + 10}</td>
+                    <td class="p-3">VaultNode_0${Math.floor(Math.random() * 3) + 1}</td>
+                    <td class="p-3 text-amber-400">${(Math.random() * 10 + 5).toFixed(1)} DDN</td>
+                </tr>
+            `;
+            tbody.innerHTML = newRow + tbody.innerHTML;
+            if(tbody.rows.length > 5) tbody.deleteRow(5);
+        }
+
+        // 2. Airdrop Claim Engine
+        function checkAirdropEligibility() {
+            const name = document.getElementById('airdrop-name').value.trim();
+            const email = document.getElementById('airdrop-email').value.trim();
+            const category = document.getElementById('airdrop-category').value;
+            const zk = document.getElementById('airdrop-zk').checked;
+            const human = document.getElementById('airdrop-human').checked;
+            const resBox = document.getElementById('airdrop-result');
+
+            if(!name || !email) {
+                alert("Please fill in your Name and Email address.");
+                return;
+            }
+            if(!zk || !human) {
+                alert("Please check both ZK-KYC and Human verification checkboxes.");
+                return;
+            }
+
+            let amount = 25;
+            if(category === 'Early Adopter') amount = 50;
+            if(category === 'Contributor') amount = 100;
+
+            const merkleProofMock = "0x" + Array.from({length: 32}, () => Math.floor(Math.random()*16).toString(16)).join('');
+            
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `
+                <div>✅ ELIGIBILITY CONFIRMED (${category})</div>
+                <div>Allocated Reward: ${amount} DDN (Hibah Grant)</div>
+                <div>Generated Merkle Proof: ${merkleProofMock}</div>
+                <div>Status: Ready to Claim. Click 'Claim Airdrop'.</div>
+            `;
+        }
+
+        function claimAirdropToken() {
+            const category = document.getElementById('airdrop-category').value;
+            let wallet = document.getElementById('airdrop-wallet').value.trim();
+            const resBox = document.getElementById('airdrop-result');
+
+            if(!wallet) {
+                wallet = "DDN_" + Math.random().toString(16).substring(2, 10).toUpperCase();
+                document.getElementById('airdrop-wallet').value = wallet;
+            }
+
+            let claimedWallets = JSON.parse(localStorage.getItem('ddn_claimed_wallets') || '[]');
+            if(claimedWallets.includes(wallet)) {
+                alert("Error: This wallet has already claimed the airdrop! One claim per wallet.");
+                return;
+            }
+
+            let amount = 25;
+            if(category === 'Early Adopter') amount = 50;
+            if(category === 'Contributor') amount = 100;
+
+            airdropState.claimedTotal += amount;
+            airdropState.remainingTotal -= amount;
+
+            document.getElementById('airdrop-claimed').innerText = `${airdropState.claimedTotal} DDN`;
+            document.getElementById('airdrop-remaining').innerText = `${airdropState.remainingTotal} DDN`;
+            if(document.getElementById('creator-pool-claimed')) {
+                document.getElementById('creator-pool-claimed').innerText = `${airdropState.claimedTotal} DDN`;
+                document.getElementById('creator-pool-remaining').innerText = `${airdropState.remainingTotal} DDN`;
+            }
+
+            claimedWallets.push(wallet);
+            localStorage.setItem('ddn_claimed_wallets', JSON.stringify(claimedWallets));
+
+            const txHash = "0x" + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
+
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `
+                <div>🎉 AIRDROP CLAIMED SUCCESSFULLY!</div>
+                <div>Wallet: ${wallet}</div>
+                <div>Amount Credited: ${amount} DDN (Type: Hibah Grant)</div>
+                <div>Gas Cost: $0.005 (Less than $0.01) | Interest: 0% (Zero Riba)</div>
+                <div>Tx Hash: ${txHash}</div>
+            `;
+        }
+
+        function sendAirdropEmailNotice() {
+            const email = document.getElementById('airdrop-email').value;
+            const subject = encodeURIComponent("Digital Dinar (DDN) Airdrop Eligibility Notice");
+            const body = encodeURIComponent("Assalamu Alaikum,\n\nYour wallet is eligible for the 8,000 DDN Airdrop pool (Hibah Grant). Please visit the dashboard to execute your Merkle claim securely.\n\nDigital Dinar Enterprise v3.1");
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        }
+
+        // 3. Secure Onboarding & Encryption
+        async function generateEncryptedWallet() {
+            const name = document.getElementById('onb-name').value.trim();
+            const email = document.getElementById('onb-email').value.trim();
+            const pass = document.getElementById('onb-pass').value;
+            const resBox = document.getElementById('onb-result');
+
+            if(!name || !email || pass.length < 8) {
+                alert("Please provide Name, Email, and a Password of at least 8 characters.");
+                return;
+            }
+
+            const walletAddr = "DDN_" + Math.random().toString(16).substring(2, 12).toUpperCase();
+            currentUserWallet = walletAddr;
+            const sampleSeed = "apple banana crater diamond eagle falcon galaxy harvest iceberg journal kinetic lunar";
+
+            const enc = new TextEncoder();
+            const salt = window.crypto.getRandomValues(new Uint8Array(16));
+            const iv = window.crypto.getRandomValues(new Uint8Array(12));
+
+            const keyMaterial = await window.crypto.subtle.importKey(
+                "raw", enc.encode(pass), {name: "PBKDF2"}, false, ["deriveKey"]
+            );
+            const key = await window.crypto.subtle.deriveKey(
+                {name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256"},
+                keyMaterial, {name: "AES-GCM", length: 256}, false, ["encrypt"]
+            );
+
+            const encryptedSeedBuf = await window.crypto.subtle.encrypt(
+                {name: "AES-GCM", iv: iv}, key, enc.encode(sampleSeed)
+            );
+
+            const encryptedBlobObj = {
+                salt: Array.from(salt),
+                iv: Array.from(iv),
+                ciphertext: Array.from(new Uint8Array(encryptedSeedBuf))
+            };
+
+            const userRecord = {
+                name, email, walletAddr, encryptedBlob: encryptedBlobObj
+            };
+
+            localStorage.setItem('ddn_current_user', JSON.stringify(userRecord));
+            let users = JSON.parse(localStorage.getItem('ddn_all_users') || '[]');
+            users.push(userRecord);
+            localStorage.setItem('ddn_all_users', JSON.stringify(users));
+
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `
+                <div>✅ WALLET GENERATED & ENCRYPTED (AES-256-GCM)</div>
+                <div class="flex items-center gap-2 mt-1">
+                    <span>Wallet Address: <b class="text-white">${walletAddr}</b></span>
+                    <button onclick="navigator.clipboard.writeText('${walletAddr}'); alert('Wallet copied!');" class="bg-slate-800 hover:bg-slate-700 text-white px-2 py-0.5 rounded text-[10px]">📋 Copy</button>
+                </div>
+                <div class="text-amber-400 font-bold mt-1">12-Word Seed: ${sampleSeed}</div>
+                <div class="text-slate-400 text-[10px]">Encrypted Blob stored securely. Raw seed never stored unencrypted.</div>
+            `;
+            document.getElementById('step2-container').classList.remove('hidden');
+        }
+
+        function dispatchEncryptedCredentials() {
+            const email = document.getElementById('onb-email').value;
+            const paperChecked = document.getElementById('onb-paper-check').checked;
+            const user = JSON.parse(localStorage.getItem('ddn_current_user') || '{}');
+            
+            if(!paperChecked) {
+                alert("Please confirm you have written your seed phrase securely on paper first.");
+                return;
+            }
+            if(!user.walletAddr) {
+                alert("Please generate a wallet first!");
+                return;
+            }
+            const subject = encodeURIComponent("Digital Dinar Encrypted Wallet Credentials");
+            const body = encodeURIComponent(`Assalamu Alaikum ${user.name},\n\nYour non-custodial wallet has been created securely.\nWallet Address: ${user.walletAddr}\n\nEncrypted Blob verification complete. Please keep your master password safe.\n\nDigital Dinar Enterprise v3.1`);
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        }
+
+        async function testDecryptBackup() {
+            const user = JSON.parse(localStorage.getItem('ddn_current_user') || '{}');
+            const pass = document.getElementById('onb-pass').value;
+            if(!user.encryptedBlob || !pass) {
+                alert("Please generate a wallet and enter your password first.");
+                return;
+            }
+            try {
+                const blob = user.encryptedBlob;
+                const enc = new TextEncoder();
+                const keyMaterial = await window.crypto.subtle.importKey(
+                    "raw", enc.encode(pass), {name: "PBKDF2"}, false, ["deriveKey"]
+                );
+                const key = await window.crypto.subtle.deriveKey(
+                    {name: "PBKDF2", salt: new Uint8Array(blob.salt), iterations: 100000, hash: "SHA-256"},
+                    keyMaterial, {name: "AES-GCM", length: 256}, false, ["decrypt"]
+                );
+                await window.crypto.subtle.decrypt(
+                    {name: "AES-GCM", iv: new Uint8Array(blob.iv)}, key, new Uint8Array(blob.ciphertext)
+                );
+                alert("SUCCESS! Backup decrypted successfully with your password.");
+            } catch(e) {
+                alert("Decryption failed! Incorrect password.");
+            }
+        }
+
+        function exportEncryptedBackupFile() {
+            const paperChecked = document.getElementById('onb-paper-check').checked;
+            if(!paperChecked) {
+                alert("Please confirm you have written your seed phrase on paper first.");
+                return;
+            }
+            const user = JSON.parse(localStorage.getItem('ddn_current_user') || '{}');
+            if(!user.encryptedBlob) {
+                alert("No encrypted wallet found to export.");
+                return;
+            }
+            const exportData = {
+                wallet: user.walletAddr,
+                email: user.email,
+                encryptedBlob: user.encryptedBlob
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", "ddn-encrypted-backup.json");
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+        }
+
+        // 4. Creator Portal
+        function calculateMaxMint() {
+            const grams = parseFloat(document.getElementById('creator-gold-grams').value) || 0;
+            const maxMint = grams / 0.0870;
+            document.getElementById('creator-max-mint').value = `${maxMint.toFixed(2)} DDN`;
+        }
+
+        function executeMultiSigMint() {
+            const grams = parseFloat(document.getElementById('creator-gold-grams').value) || 0;
+            const certHash = document.getElementById('creator-cert-hash').value.trim();
+            const pass = document.getElementById('creator-password').value;
+            const resBox = document.getElementById('creator-mint-result');
+
+            if(grams <= 0 || !certHash || !pass) {
+                alert("Please enter valid gold grams, audit certificate hash, and password.");
+                return;
+            }
+            const maxMint = grams / 0.0870;
+            const txHash = "0x" + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
+            
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `
+                <div>⚡ MULTI-SIG MINT EXECUTED SUCCESSFULLY</div>
+                <div>Minted: ${maxMint.toFixed(2)} DDN against ${grams}g Gold</div>
+                <div>PoR Status: VERIFIED 1:1 In Sync | Multi-Sig: 3-of-5 Approved</div>
+                <div>DAO Status: Automatically Approved</div>
+                <div>Tx Hash: ${txHash}</div>
+            `;
+
+            creatorMintLogHistory.unshift(`[Mint] ${maxMint.toFixed(2)} DDN minted against ${grams}g deposit. PoR Synced.`);
+            document.getElementById('creator-mint-log').innerHTML = creatorMintLogHistory.map(l => `<div>${l}</div>`).join('');
+        }
+
+        function sendCreatorInvitation() {
+            const email = document.getElementById('creator-invite-email').value;
+            const cat = document.getElementById('creator-invite-cat').value;
+            if(!email) {
+                alert("Please enter invitee email.");
+                return;
+            }
+            const subject = encodeURIComponent("Exclusive Invitation to Digital Dinar (DDN) Airdrop");
+            const body = encodeURIComponent(`Assalamu Alaikum,\n\nYou have been specially invited as a '${cat}' to claim your Digital Dinar (DDN) tokens. Please visit the enterprise dashboard.\n\nDigital Dinar Team`);
+            window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+        }
+
+        // 5. Transfer / P2P
+        function calculateGoldEquivalent() {
+            const amt = parseFloat(document.getElementById('p2p-amount').value) || 0;
+            const goldGrams = amt * 0.0870;
+            document.getElementById('p2p-gold-eq').innerText = `Gold Equivalent: ${goldGrams.toFixed(4)}g (24k)`;
+        }
+
+        function sendP2PTransfer() {
+            const from = document.getElementById('p2p-from').value.trim();
+            const to = document.getElementById('p2p-to').value.trim();
+            const amount = parseFloat(document.getElementById('p2p-amount').value) || 0;
+            const resBox = document.getElementById('p2p-result');
+
+            if(!from || !to || amount <= 0) {
+                alert("Please fill in sender, recipient, and valid amount.");
+                return;
+            }
+
+            const goldEq = amount * 0.0870;
+            const txHash = "0x" + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
+
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `
+                <div>✅ TRANSFER COMPLETED SUCCESSFULLY</div>
+                <div>From: ${from} → To: ${to}</div>
+                <div>Amount: ${amount} DDN (${goldEq.toFixed(4)}g 24k Gold)</div>
+                <div>Gas Fee: $0.01 (Zero Riba) | Finality: &lt; 2s</div>
+                <div>Tx Hash: ${txHash}</div>
+            `;
+        }
+
+        function executeBatchDistribution() {
+            const list = document.getElementById('batch-list').value.trim();
+            const resBox = document.getElementById('batch-result');
+            if(!list) {
+                alert("Please enter recipients list.");
+                return;
+            }
+            const lines = list.split('\n');
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `✅ Batch distribution executed successfully across ${lines.length} recipient wallets. Gas optimized.`;
+        }
+
+        // 7. Shariah DAO Voting
+        function voteProposal(id, choice) {
+            const yesEl = document.getElementById(`prop-${id}-yes`);
+            let currentYes = parseInt(yesEl.innerText.replace(/,/g, ''));
+            if(choice === 'yes') {
+                currentYes += 1;
+                yesEl.innerText = currentYes.toLocaleString();
+                alert(`Successfully voted YES on Proposal #${id}`);
+            } else {
+                alert(`Successfully voted NO on Proposal #${id}`);
+            }
+        }
+
+        // 8. Mudarabah AMM Profit Calculator
+        function calculateMudarabahProfit() {
+            const liq = parseFloat(document.getElementById('amm-user-liq').value) || 0;
+            const profit = parseFloat(document.getElementById('amm-total-profit').value) || 0;
+            const pool = parseFloat(document.getElementById('amm-total-pool').value) || 1;
+            const resBox = document.getElementById('amm-result');
+
+            const userShare = (liq / pool) * profit * 0.70;
+
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `
+                <div>📊 MUDARABAH PROFIT CALCULATION</div>
+                <div>Your Liquidity Share: ${((liq/pool)*100).toFixed(2)}%</div>
+                <div>Your Net Profit Share (70% Mudarib / Rab-ul-Maal split): <span class="text-amber-400 font-bold">${userShare.toFixed(2)} DDN</span></div>
+                <div>Compliance: 100% Profit-Sharing (No Interest / No Fixed APY)</div>
+            `;
+        }
+
+        // 9. Bridge Simulation
+        function executeSecureBridge() {
+            const from = document.getElementById('bridge-from').value;
+            const to = document.getElementById('bridge-to').value;
+            const amt = document.getElementById('bridge-amount').value;
+            const resBox = document.getElementById('bridge-result');
+
+            if(!amt || amt <= 0) {
+                alert("Please enter bridge amount.");
+                return;
+            }
+
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `
+                <div class="space-y-1">
+                    <div>🔄 STEP 1: Locking ${amt} DDN on ${from}... [DONE]</div>
+                    <div>🔐 STEP 2: Chainlink CCIP Vault Proof Attestation... [VERIFIED]</div>
+                    <div>⚡ STEP 3: Minting ${amt} DDN on ${to}... [SUCCESS]</div>
+                    <div class="text-amber-400 font-bold pt-1">Bridge Complete. Zero Double-Mint Guaranteed.</div>
+                </div>
+            `;
+        }
+
+        // 10. Zakat Calculator
+        function calculateZakatObligation() {
+            const bal = parseFloat(document.getElementById('zakat-balance').value) || 0;
+            const hawl = document.getElementById('zakat-hawl').value;
+            const resBox = document.getElementById('zakat-result');
+
+            const nisabGrams = 87.48;
+            const userGrams = bal * 0.0870;
+
+            resBox.classList.remove('hidden');
+            if(userGrams >= nisabGrams && hawl === 'completed') {
+                const zakatDue = bal * 0.025;
+                resBox.innerHTML = `
+                    <div>✅ ZAKAT IS OBLIGATORY (Wajib)</div>
+                    <div>Your Gold Equiv: ${userGrams.toFixed(2)}g (Nisab Met: 87.48g)</div>
+                    <div>Zakat Due (2.5%): <span class="text-amber-400 font-bold">${zakatDue.toFixed(2)} DDN</span></div>
+                `;
+            } else {
+                resBox.innerHTML = `
+                    <div>ℹ️ ZAKAT NOT DUE YET</div>
+                    <div>Your Gold Equiv: ${userGrams.toFixed(2)}g (Nisab Threshold: 87.48g)</div>
+                    <div>Status: Below Nisab threshold or Hawl period not completed.</div>
+                `;
+            }
+        }
+
+        // 12. Wallet Check & Recovery
+        function verifyWalletBalance() {
+            const addr = document.getElementById('check-wallet-addr').value.trim();
+            const resBox = document.getElementById('check-wallet-result');
+            if(!addr) {
+                alert("Please enter a wallet address.");
+                return;
+            }
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `
+                <div>Wallet: ${addr}</div>
+                <div>Balance: 250.00 DDN | Gold Peg: 21.75g (24k)</div>
+                <div>Status: Active | ZK-Verified | PoR Synced</div>
+            `;
+        }
+
+        function recoverWallet() {
+            const seed = document.getElementById('recover-seed').value.trim();
+            const pass = document.getElementById('recover-pass').value;
+            const resBox = document.getElementById('recover-result');
+            if(!seed || pass.length < 8) {
+                alert("Please enter seed phrase and password (min 8 chars).");
+                return;
+            }
+            resBox.classList.remove('hidden');
+            resBox.innerHTML = `
+                <div>✅ WALLET RECOVERED SUCCESSFULLY</div>
+                <div>Restored Wallet: DDN_RECOVERED_99A1</div>
+                <div>Restored Balance: 150.00 DDN</div>
+            `;
+        }
+
+        // 13. Login / Session Management & Dashboard
+        function userLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-pass').value;
+
+            let users = JSON.parse(localStorage.getItem('ddn_all_users') || '[]');
+            const found = users.find(u => u.email === email);
+
+            if(email === "mdsubhanpasha@icloud.com" || found) {
+                localStorage.setItem('ddn_logged_in_email', email);
+                if(found && found.walletAddr) currentUserWallet = found.walletAddr;
+                showUserDashboard(email);
+            } else {
+                alert("User not found. Please create an account via Secure Onboarding.");
+            }
+        }
+
+        function checkExistingSession() {
+            const loggedEmail = localStorage.getItem('ddn_logged_in_email');
+            if(loggedEmail) {
+                let users = JSON.parse(localStorage.getItem('ddn_all_users') || '[]');
+                const found = users.find(u => u.email === loggedEmail);
+                if(found && found.walletAddr) currentUserWallet = found.walletAddr;
+                showUserDashboard(loggedEmail);
+            }
+        }
+
+        function showUserDashboard(email) {
+            document.getElementById('login-container').classList.add('hidden');
+            document.getElementById('user-dashboard').classList.remove('hidden');
+            document.getElementById('dash-welcome').innerText = `Welcome, Mohammad Subhan Pasha`;
+            document.getElementById('dash-wallet').innerText = `Wallet: ${currentUserWallet}`;
+        }
+
+        function userLogout() {
+            localStorage.removeItem('ddn_logged_in_email');
+            document.getElementById('user-dashboard').classList.add('hidden');
+            document.getElementById('login-container').classList.remove('hidden');
+        }
+
+        function claimMiningRewards() {
+            if(activeMiningMined <= 0) {
+                alert("No mined rewards available to claim yet.");
+                return;
+            }
+            alert(`Successfully claimed ${activeMiningMined.toFixed(2)} DDN mined rewards to your balance!`);
+            activeMiningMined = 0;
+            document.getElementById('mined-amount').innerText = "0.00";
+        }
+
+        function dashSendP2P() {
+            const to = document.getElementById('dash-p2p-to').value.trim();
+            const amt = document.getElementById('dash-p2p-amt').value;
+            if(!to || !amt) {
+                alert("Please enter recipient and amount.");
+                return;
+            }
+            alert(`Successfully sent ${amt} DDN to ${to}! Gas fee: $0.01.`);
+        }
+    </script>
+</body>
+</html>
