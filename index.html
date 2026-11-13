@@ -9,6 +9,7 @@
     <style>
         .tab-content { display: none !important; }
         .tab-content.active { display: block !important; }
+        .creator-only { display: none; }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col">
@@ -16,14 +17,22 @@
     <!-- Header & Navigation -->
     <header class="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto flex flex-col gap-4">
-            <h1 class="text-xl font-bold tracking-wider text-amber-400">DIGITAL <span class="text-emerald-400">DINAR</span> <span class="text-xs bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30">v3.1 ENTERPRISE</span></h1>
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl font-bold tracking-wider text-amber-400">DIGITAL <span class="text-emerald-400">DINAR</span> <span class="text-xs bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30">v3.1 ENTERPRISE</span></h1>
+                <div id="creator-badge" class="hidden text-xs bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full border border-purple-500/40 font-semibold animate-pulse">
+                    ⚡ Creator Admin Mode Active
+                </div>
+            </div>
             
-            <!-- Navigation Buttons -->
+            <!-- Navigation Buttons (Public + Creator Tab conditionally enabled) -->
             <nav id="nav-tabs" class="flex flex-wrap gap-2">
                 <button data-target="explorer" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-500 text-slate-950 font-bold shadow transition-all">Explorer</button>
                 <button data-target="airdrop" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition-all">8,000 DDN Airdrop</button>
                 <button data-target="onboarding" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition-all">Secure Onboarding</button>
-                <button data-target="creator" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition-all">Creator Mint</button>
+                
+                <!-- Creator Tab (Hidden by default, unlocked via Secret Link) -->
+                <button data-target="creator" id="creator-tab-btn" class="tab-btn creator-only px-3 py-1.5 rounded-full text-xs font-medium bg-purple-600 text-white font-bold border border-purple-400 shadow transition-all">🔐 Creator Control Panel</button>
+
                 <button data-target="transfer" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition-all">Transfer / P2P</button>
                 <button data-target="vault" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition-all">RWA & Vault</button>
                 <button data-target="dao" class="tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition-all">Shariah DAO</button>
@@ -51,10 +60,24 @@
             <h2 class="text-2xl font-bold text-amber-400">Secure Onboarding & Encrypted Wallet</h2>
             <p class="text-slate-300">Automatic encrypted seed phrase dispatch to verified email (mdsubhanpasha@icloud.com).</p>
         </div>
+
+        <!-- Creator Secret Tab Content -->
         <div id="creator" class="tab-content space-y-4">
-            <h2 class="text-2xl font-bold text-amber-400">Creator Minting Portal</h2>
-            <p class="text-slate-300">Vault creators minting gold-backed tokens against verified physical bullion.</p>
+            <h2 class="text-2xl font-bold text-purple-400">🔐 Creator Control & Minting Portal (Restricted)</h2>
+            <p class="text-slate-300">Authorized vault creator master panel. Mint tokens against physical gold reserves and manage distribution safely.</p>
+            <div class="bg-slate-900 p-6 rounded-xl border border-purple-500/30 space-y-4 max-w-xl">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Physical Gold Deposit Weight (Grams)</label>
+                    <input type="number" placeholder="e.g. 500" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">Vault Certificate Reference Hash</label>
+                    <input type="text" placeholder="0xVaultCert..." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-white">
+                </div>
+                <button class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-6 py-3 rounded-lg w-full transition-all">Execute Multi-Sig Mint & Distribute</button>
+            </div>
         </div>
+
         <div id="transfer" class="tab-content space-y-4">
             <h2 class="text-2xl font-bold text-amber-400">P2P Zero-Fee Transfer</h2>
             <p class="text-slate-300">Instant peer-to-peer transfers with zero Riba and ZK privacy.</p>
@@ -93,9 +116,17 @@
         </div>
     </main>
 
-    <!-- Bulletproof JS Event Listener -->
+    <!-- JavaScript Controller with Secret Link & Tab Switching Logic -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // Check if Secret Creator Hash is provided in URL (e.g. yoursite.com/#creator-master-admin-key)
+            const secretKey = "#creator-master-admin-key";
+            if (window.location.hash === secretKey) {
+                // Unlock Creator Tab & Badge
+                document.querySelectorAll('.creator-only').forEach(el => el.style.display = 'inline-block');
+                document.getElementById('creator-badge').classList.remove('hidden');
+            }
+
             const buttons = document.querySelectorAll('.tab-btn');
             const contents = document.querySelectorAll('.tab-content');
 
@@ -108,7 +139,11 @@
 
                     // Reset button styles
                     buttons.forEach(btn => {
-                        btn.className = "tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition-all";
+                        if(btn.id === 'creator-tab-btn') {
+                            btn.className = "tab-btn creator-only px-3 py-1.5 rounded-full text-xs font-medium bg-purple-600 text-white font-bold border border-purple-400 shadow transition-all";
+                        } else {
+                            btn.className = "tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 transition-all";
+                        }
                     });
 
                     // Activate targeted content
@@ -118,7 +153,11 @@
                     }
 
                     // Highlight clicked button
-                    this.className = "tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-amber-500 text-slate-950 font-bold shadow transition-all";
+                    if(this.id === 'creator-tab-btn') {
+                        this.className = "tab-btn creator-only px-3 py-1.5 rounded-full text-xs font-medium bg-purple-500 text-slate-950 font-bold shadow transition-all";
+                    } else {
+                        this.className = "tab-btn px-3 py-1.5 rounded-full text-xs font-medium bg-amber-500 text-slate-950 font-bold shadow transition-all";
+                    }
                 });
             });
         });
